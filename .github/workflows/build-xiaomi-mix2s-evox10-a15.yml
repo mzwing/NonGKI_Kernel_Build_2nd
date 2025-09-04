@@ -13,7 +13,7 @@ env:
   EXTRA_CMDS : "LD=ld.lld"
 
   KERNEL_SOURCE : "https://github.com/Evolution-X-Devices/kernel_xiaomi_sdm845.git"
-  KERNEL_BRANCH : "vic"
+  KERNEL_BRANCH : "bka"
 
   CLANG_SOURCE : "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git"
   CLANG_BRANCH : "lineage-20.0"
