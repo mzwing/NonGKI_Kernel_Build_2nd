@@ -15,7 +15,7 @@ env:
   KERNEL_SOURCE : "https://github.com/JackA1ltman/ExtremeKernel_noksu.git"
   KERNEL_BRANCH : "main"
 
-  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -121,6 +121,8 @@ jobs:
 
       - name: ❗ Samsung Kernel Pack Process
         run: |
+          cd $GITHUB_WORKSPACE/device_kernel
+
           # Var
           KERNEL_PATH=build/out/exynos9825/Image
           KERNEL_OFFSET=0x00008000
@@ -136,8 +138,6 @@ jobs:
           PAGESIZE=2048
           RAMDISK=build/out/exynos9825/ramdisk.cpio.gz
           OUTPUT_FILE=build/out/exynos9825/boot.img
-
-          cd $GITHUB_WORKSPACE/device_kernel
 
           ./toolchain/mkdtimg cfg_create out/arch/arm64/boot/dtb.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/exynos
           ./toolchain/mkdtimg cfg_create build/out/exynos9825/dtbo.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/samsung
