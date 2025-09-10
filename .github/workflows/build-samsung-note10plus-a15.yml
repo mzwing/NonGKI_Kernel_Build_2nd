@@ -124,7 +124,7 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel
 
           # Var
-          KERNEL_PATH=build/out/exynos9825/Image
+          KERNEL_PATH=build/out/d2s/Image
           KERNEL_OFFSET=0x00008000
           RAMDISK_OFFSET=0xF0000000
           SECOND_OFFSET=0xF0000000
@@ -136,16 +136,20 @@ jobs:
           OS_PATCH_LEVEL=2025-01
           OS_VERSION=14.0.0
           PAGESIZE=2048
-          RAMDISK=build/out/exynos9825/ramdisk.cpio.gz
-          OUTPUT_FILE=build/out/exynos9825/boot.img
+          RAMDISK=build/out/d2s/ramdisk.cpio.gz
+          OUTPUT_FILE=build/out/d2s/boot.img
+          BOARD=SRPSC14B009KU
 
-          mkdir -p build/out/exynos9825/zip
+          mkdir -p build/out/d2s/zip
+          mkdir -p build/out/d2s/zip/META-INF/com/google/android
 
-          ./toolchain/mkdtimg cfg_create build/out/exynos9825/dtb.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/exynos
-          ./toolchain/mkdtimg cfg_create build/out/exynos9825/dtbo.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/samsung
+          cp -f out/arch/arm64/boot/Image build/out/d2s
+
+          ./toolchain/mkdtimg cfg_create build/out/d2s/dtb.img build/dtconfigs/d2s.cfg -d out/arch/arm64/boot/dts/exynos
+          ./toolchain/mkdtimg cfg_create build/out/d2s/dtbo.img build/dtconfigs/d2s.cfg -d out/arch/arm64/boot/dts/samsung
 
           pushd build/ramdisk > /dev/null
-          find . ! -name . | LC_ALL=C sort | cpio -o -H newc -R root:root | gzip > ../out/exynos9825/ramdisk.cpio.gz || abort
+          find . ! -name . | LC_ALL=C sort | cpio -o -H newc -R root:root | gzip > ../out/d2s/ramdisk.cpio.gz || abort
           popd > /dev/null
 
           ./toolchain/mkbootimg --base $BASE --board $BOARD --cmdline "$CMDLINE" --hashtype $HASHTYPE \
@@ -154,13 +158,13 @@ jobs:
           --ramdisk $RAMDISK --ramdisk_offset $RAMDISK_OFFSET --second_offset $SECOND_OFFSET \
           --tags_offset $TAGS_OFFSET -o $OUTPUT_FILE || abort
 
-          cp build/out/exynos9825/boot.img build/out/exynos9825/zip/files/boot.img
-          cp build/out/exynos9825/dtb.img build/out/exynos9825/zip/files/dtb.img
-          cp build/out/exynos9825/dtbo.img build/out/exynos9825/zip/files/dtbo.img
-          cp build/update-binary build/out/exynos9825/zip/META-INF/com/google/android/update-binary
-          cp build/updater-script build/out/exynos9825/zip/META-INF/com/google/android/updater-script
+          cp build/out/d2s/boot.img build/out/d2s/zip/files/boot.img
+          cp build/out/d2s/dtb.img build/out/d2s/zip/files/dtb.img
+          cp build/out/d2s/dtbo.img build/out/d2s/zip/files/dtbo.img
+          cp build/update-binary build/out/d2s/zip/META-INF/com/google/android/update-binary
+          cp build/updater-script build/out/d2s/zip/META-INF/com/google/android/updater-script
 
-          cp -rp ./build/out/exynos9825/zip/* tmp
+          cp -rp ./build/out/d2s/zip/* tmp
           cd tmp
           7za a -mx9 tmp.zip *
           cd ..
