@@ -169,5 +169,7 @@ jobs:
           cp -fp tmp/tmp.zip ${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}.zip
           rm -rf tmp
 
+          echo "PACK_NAME=${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}.zip" >> $GITHUB_ENV
+
       - name: ✏️ Upload Artifacts
         uses: ./.github/workflows/upload-files
