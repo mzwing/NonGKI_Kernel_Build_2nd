@@ -120,6 +120,7 @@ jobs:
         uses: ./.github/workflows/build-process
 
       - name: ❗ Samsung Kernel Pack Process
+        shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
 
