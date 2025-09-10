@@ -161,6 +161,7 @@ jobs:
           cp build/update-binary build/out/d2s/zip/META-INF/com/google/android/update-binary
           cp build/updater-script build/out/d2s/zip/META-INF/com/google/android/updater-script
 
+          mkdir tmp
           cp -rp ./build/out/d2s/zip/* tmp
           cd tmp
           7za a -mx9 tmp.zip *
