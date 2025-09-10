@@ -139,7 +139,9 @@ jobs:
           RAMDISK=build/out/exynos9825/ramdisk.cpio.gz
           OUTPUT_FILE=build/out/exynos9825/boot.img
 
-          ./toolchain/mkdtimg cfg_create out/arch/arm64/boot/dtb.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/exynos
+          mkdir -p build/out/exynos9825/zip
+
+          ./toolchain/mkdtimg cfg_create build/out/exynos9825/dtb.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/exynos
           ./toolchain/mkdtimg cfg_create build/out/exynos9825/dtbo.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/samsung
 
           pushd build/ramdisk > /dev/null
