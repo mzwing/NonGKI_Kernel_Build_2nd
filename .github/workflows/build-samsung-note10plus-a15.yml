@@ -141,7 +141,7 @@ jobs:
           OUTPUT_FILE=build/out/d2s/boot.img
           BOARD=SRPSC14B009KU
 
-          mkdir -p build/out/d2s/zip
+          mkdir -p build/out/d2s/zip/files
           mkdir -p build/out/d2s/zip/META-INF/com/google/android
 
           cp -f out/arch/arm64/boot/Image build/out/d2s/Image
