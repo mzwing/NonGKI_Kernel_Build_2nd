@@ -125,6 +125,7 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel
 
           # Var
+          TIME=$(date +"%Y%m%d%H%M%S")
           KERNEL_PATH=build/out/d2s/Image
           KERNEL_OFFSET=0x00008000
           RAMDISK_OFFSET=0xF0000000
