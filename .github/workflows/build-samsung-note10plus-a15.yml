@@ -145,7 +145,7 @@ jobs:
 
           cp -f out/arch/arm64/boot/Image build/out/d2s
 
-          ./toolchain/mkdtimg cfg_create build/out/d2s/dtb.img build/dtconfigs/d2s.cfg -d out/arch/arm64/boot/dts/exynos
+          ./toolchain/mkdtimg cfg_create build/out/d2s/dtb.img build/dtconfigs/exynos9825.cfg -d out/arch/arm64/boot/dts/exynos
           ./toolchain/mkdtimg cfg_create build/out/d2s/dtbo.img build/dtconfigs/d2s.cfg -d out/arch/arm64/boot/dts/samsung
 
           pushd build/ramdisk > /dev/null
