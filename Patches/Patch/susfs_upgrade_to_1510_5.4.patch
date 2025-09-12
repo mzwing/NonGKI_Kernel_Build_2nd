@@ -1,5 +1,48 @@
+diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
+index d35e3b8..4f25015 100644
+--- a/fs/devpts/inode.c
++++ b/fs/devpts/inode.c
+@@ -604,12 +604,6 @@ struct dentry *devpts_pty_new(struct pts_fs_info *fsi, int index, void *priv)
+  */
+ void *devpts_get_priv(struct dentry *dentry)
+ {
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-	if (likely(ksu_devpts_hook)) {
+-		ksu_handle_devpts(dentry->d_inode);
+-	}
+-#endif
+-
+ 	if (dentry->d_sb->s_magic != DEVPTS_SUPER_MAGIC)
+ 		return NULL;
+ 	return dentry->d_fsdata;
+diff --git a/fs/exec.c b/fs/exec.c
+index d4f0d14..60fb40d 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1904,21 +1904,11 @@ out_ret:
+ 	return retval;
+ }
+ 
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-extern bool susfs_is_sus_su_hooks_enabled __read_mostly;
+-extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr, void *argv,
+-				void *envp, int *flags);
+-#endif
+-
+ static int do_execveat_common(int fd, struct filename *filename,
+ 			      struct user_arg_ptr argv,
+ 			      struct user_arg_ptr envp,
+ 			      int flags)
+ {
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-	if (susfs_is_sus_su_hooks_enabled)
+-		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);
+-#endif
+ 	return __do_execve_file(fd, filename, argv, envp, flags, NULL);
+ }
+ 
 diff --git a/fs/namei.c b/fs/namei.c
-index 05bffae..88bad96 100644
+index 05bffae..b8ce131 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1007,7 +1007,7 @@ static inline int may_follow_link(struct nameidata *nd)
@@ -173,7 +216,7 @@ index 05bffae..88bad96 100644
  		filp = path_openat(&nd, op, flags | LOOKUP_REVAL);
  #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
 -	if (!IS_ERR(filp) && unlikely(filp->f_inode->i_state & INODE_STATE_OPEN_REDIRECT) && current_uid().val < 2000) {
-+	if (!IS_ERR(filp) && unlikely(filp->f_inode->i_mapping->flags & BIT_OPEN_REDIRECT) && current_uid().val < 2000) {
++	if (!IS_ERR(filp) && unlikely(filp->f_inode->i_mapping->flags & BIT_OPEN_REDIRECT) && current_uid().val < 11000) {
  		fake_pathname = susfs_get_redirected_path(filp->f_inode->i_ino);
  		if (!IS_ERR(fake_pathname)) {
  			restore_nameidata();
@@ -303,6 +346,23 @@ index 4df5381..6dd4ce0 100644
  			struct path path;
  			char *pathname = kmalloc(PAGE_SIZE, GFP_KERNEL);
  			char *dpath;
+diff --git a/fs/open.c b/fs/open.c
+index e902bc0..4d475e4 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -346,12 +346,6 @@ SYSCALL_DEFINE4(fallocate, int, fd, int, mode, loff_t, offset, loff_t, len)
+  * switching the fsuid/fsgid around to the real ones.
+  */
+ 
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-extern bool susfs_is_sus_su_hooks_enabled __read_mostly;
+-extern int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,
+-			int *flags);
+-#endif
+-
+ long do_faccessat(int dfd, const char __user *filename, int mode)
+ {
+ 	const struct cred *old_cred;
 diff --git a/fs/proc/fd.c b/fs/proc/fd.c
 index 622ff08..4a74eb2 100644
 --- a/fs/proc/fd.c
@@ -385,7 +445,7 @@ index ba1cf0f..994bd83 100644
  #endif
  
 diff --git a/fs/stat.c b/fs/stat.c
-index 8bd32c4..55a5e9d 100644
+index 8bd32c4..4956295 100644
 --- a/fs/stat.c
 +++ b/fs/stat.c
 @@ -40,8 +40,8 @@ extern void susfs_sus_ino_for_generic_fillattr(unsigned long ino, struct kstat *
@@ -399,6 +459,18 @@ index 8bd32c4..55a5e9d 100644
  		susfs_sus_ino_for_generic_fillattr(inode->i_ino, stat);
  		stat->mode = inode->i_mode;
  		stat->rdev = inode->i_rdev;
+@@ -184,11 +184,6 @@ EXPORT_SYMBOL(vfs_statx_fd);
+  * 0 will be returned on success, and a -ve error code if unsuccessful.
+  */
+ 
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-extern bool susfs_is_sus_su_hooks_enabled __read_mostly;
+-extern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
+-#endif
+-
+ int vfs_statx(int dfd, const char __user *filename, int flags,
+ 	      struct kstat *stat, u32 request_mask)
+ {
 diff --git a/fs/stat.c.orig b/fs/stat.c.orig
 index 9ca1a80..4c2629a 100644
 --- a/fs/stat.c.orig
@@ -435,7 +507,7 @@ index df3de23..9c1fa9c 100644
  	}
  #endif
 diff --git a/fs/susfs.c b/fs/susfs.c
-index 9b92d50..51adb38 100644
+index 9b92d50..f3b34d2 100644
 --- a/fs/susfs.c
 +++ b/fs/susfs.c
 @@ -21,25 +21,35 @@ static spinlock_t susfs_spin_lock;
@@ -524,7 +596,9 @@ index 9b92d50..51adb38 100644
 +		SUSFS_LOGE("Failed opening file '%s'\n", info.target_pathname);
 +		return err;
 +	}
-+
+ 
+-	return (likely(current->susfs_task_state & TASK_STRUCT_NON_ROOT_USER_APP_PROC) &&
+-							(unlikely(cur_uid != i_uid)));
 +	if (!path.dentry->d_inode) {
 +		err = -EINVAL;
 +		goto out_path_put_path;
@@ -543,9 +617,7 @@ index 9b92d50..51adb38 100644
 +		err = -ENOMEM;
 +		goto out_kfree_tmp_buf;
 +	}
- 
--	return (likely(current->susfs_task_state & TASK_STRUCT_NON_ROOT_USER_APP_PROC) &&
--							(unlikely(cur_uid != i_uid)));
++
 +	if (susfs_starts_with(resolved_pathname, "/storage/")) {
 +		err = -EINVAL;
 +		SUSFS_LOGE("path starts with /storage and /sdcard cannot be added by add_sus_path_loop\n");
@@ -775,7 +847,19 @@ index 9b92d50..51adb38 100644
  	} else {
  		SUSFS_LOGI("target_ino: '%lu', target_pathname: '%s' redirected_pathname: '%s', is successfully added to OPEN_REDIRECT_HLIST\n",
  				new_entry->target_ino, new_entry->target_pathname, new_entry->redirected_pathname);
-@@ -1133,6 +1244,13 @@ out_kfree_kbuf:
+@@ -1117,11 +1228,6 @@ int susfs_get_enabled_features(char __user* buf, size_t bufsize) {
+ 	if (err) goto out_kfree_kbuf;
+ 	buf_ptr = kbuf + copied_size;
+ #endif
+-#ifdef CONFIG_KSU_SUSFS_SUS_SU
+-	err = copy_config_to_buf("CONFIG_KSU_SUSFS_SUS_SU\n", buf_ptr, &copied_size, bufsize);
+-	if (err) goto out_kfree_kbuf;
+-	buf_ptr = kbuf + copied_size;
+-#endif
+ #ifdef CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT
+ 	err = copy_config_to_buf("CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT\n", buf_ptr, &copied_size, bufsize);
+ 	if (err) goto out_kfree_kbuf;
+@@ -1133,6 +1239,13 @@ out_kfree_kbuf:
  	return err;
  }
  
@@ -789,7 +873,7 @@ index 9b92d50..51adb38 100644
  
  /* susfs_init */
  void susfs_init(void) {
-@@ -1146,4 +1264,3 @@ void susfs_init(void) {
+@@ -1146,4 +1259,3 @@ void susfs_init(void) {
  
  /* No module exit is needed becuase it should never be a loadable kernel module */
  //void __init susfs_exit(void)

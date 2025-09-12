@@ -39,3 +39,11 @@ jobs:
       fail-fast: true
     uses: ./.github/workflows/build-redmi-k20pro-aosp-a15-sovietstaross.yml
     secrets: inherit
+
+  # Samsung
+  build-samsung-note10plus-oneui-a15:
+    name: "Samsung Note 10 Plus (OneUI A15)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-samsung-note10plus-oneui-a15.yml
+    secrets: inherit
