@@ -53,9 +53,8 @@ runs:
             patch -p1 < susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch || true
             echo "Detected no-kprobe hook, use no-kprobe patch."
           elif [[ "${{ env.KERNEL_VERSION }}" == "5.4" ]]; then
-            cp /tmp/Patches/Patch/susfs_upgrade_to_158_5.4_kprobe.patch ./
-            patch -p1 < susfs_upgrade_to_158_5.4_kprobe.patch || true
-            echo "Cannot detected no-kprobe hook in kernel 5.4, use kprobe patch."
+            echo "Cannot detected no-kprobe hook in kernel 5.4, stop build process."
+            false
           else
             echo "kernel version<5.4 cannot use kprobe patch."
           fi
@@ -73,9 +72,8 @@ runs:
             patch -p1 < susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch || true
             echo "Detected no-kprobe hook, use no-kprobe patch to update 1.5.10."
           elif [[ "${{ env.KERNEL_VERSION }}" == "5.4" ]]; then
-            cp /tmp/Patches/Patch/susfs_upgrade_to_1510_5.4_kprobe.patch ./
-            patch -p1 < susfs_upgrade_to_1510_5.4_kprobe.patch || true
-            echo "Cannot detected no-kprobe hook in kernel 5.4, use kprobe patch to update 1.5.10."
+            echo "Cannot detected no-kprobe hook in kernel 5.4, stop build process."
+            false
           else
             echo "kernel version<5.4 cannot use kprobe patch to update 1.5.10."
           fi
