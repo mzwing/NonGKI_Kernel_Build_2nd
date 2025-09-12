@@ -1,4 +1,4 @@
-name: Build Xiaomi Mix2s (Evolution X 10 A15)
+name: Build Xiaomi 11 (Evolution X 11 A16)
 
 on:
   workflow_call:
