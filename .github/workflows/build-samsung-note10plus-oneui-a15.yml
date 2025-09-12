@@ -30,7 +30,7 @@ env:
   DEFCONFIG_FROM_BOOT: false
 
   KERNELSU_SOURCE : "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/refs/heads/susfs-main/kernel/setup.sh"
-  KERNELSU_BRANCH : "nongki"
+  KERNELSU_BRANCH : "susfs-main"
   KERNELSU_NAME : "KernelSU"
 
   SUSFS_ENABLE : true
