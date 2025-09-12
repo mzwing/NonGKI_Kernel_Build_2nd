@@ -80,13 +80,7 @@ for i in "${patch_files[@]}"; do
     # include/ changes
     ## include/linux/cred.h
     include/linux/cred.h)
-        if grep -q "atomic_long_inc_not_zero" include/linux/cred.h; then
-            sed -i '/^static inline void put_cred/i static inline const struct cred *get_cred_rcu(const struct cred *cred)\n{\n\tstruct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_long_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n\}\n' include/linux/cred.h
-        elif [ "$FIRST_VERSION" -lt 4 ] && [ "$SECOND_VERSION" -lt 18 ]; then
-            sed -i '/static inline void put_cred(const struct cred \*_cred)/i \static inline const struct cred *get_cred_rcu(const struct cred *cred){\struct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n}' include/linux/cred.h
-        else
-            sed -i '/^static inline void put_cred/i static inline const struct cred *get_cred_rcu(const struct cred *cred)\n{\n\tstruct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n\}\n' include/linux/cred.h
-        fi
+        sed -i '/^static inline void put_cred/i static inline const struct cred *get_cred_rcu(const struct cred *cred)\n{\n\tstruct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n\}\n' include/linux/cred.h
         ;;
     ## include/linux/uaccess.h
     include/linux/uaccess.h)
