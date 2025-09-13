@@ -32,6 +32,13 @@ jobs:
     uses: ./.github/workflows/build-xiaomi-11ultra-hyperos-a14.yml
     secrets: inherit
 
+  build-xiaomi-11-evox-a16:
+    name: "Xiaomi 11 (Evolution X 11 A16)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-xiaomi-11-evox-a16.yml
+    secrets: inherit
+
   ## Redmi
   build-redmi-k20pro-aosp-a15-sovietstaross:
     name: "Redmi K20 Pro (Soviet-Star-OSS)(Based-AOSP A15)"
