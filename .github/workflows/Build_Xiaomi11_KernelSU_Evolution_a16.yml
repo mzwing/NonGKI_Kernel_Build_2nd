@@ -105,44 +105,6 @@ jobs:
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
 
-      - name: 🪛 Extra Kernel Options
-        run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
-
-          # Patch Cgroup V2
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_to_49.patch
-          patch -p1 < cgroupv2_to_49.patch
-
-          # Patch Binder
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_freezer_to_49.patch
-          patch -p1 < binder_freezer_to_49.patch
-
-          # Patch LZ4KD
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4kd_to_49.patch
-          patch -p1 < lz4kd_to_49.patch
-
-          # Patch Simple LMK
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/simple_lmk_to_49.patch
-          patch -p1 < simple_lmk_to_49.patch || true
-
-          # LZ4KD
-          # echo "CONFIG_CRYPTO_ZSTD=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_CRYPTO_LZ4K=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_CRYPTO_LZ4KD=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-
-          # Simple LMK
-          echo "# CONFIG_MEMCG is not set" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "# CONFIG_MEMCG_SWAP is not set" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "# CONFIG_MEMCG_SWAP_ENABLED is not set" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ANDROID_SIMPLE_LMK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ANDROID_SIMPLE_LMK_AGGRESSION=1" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ANDROID_SIMPLE_LMK_MINFREE=100" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-
-          # Zram Writeback
-          echo "CONFIG_ZRAM_WRITEBACK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ZRAM_ENTROPY=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-
       - name: 🪝 Patch Kernel of SUSFS
         uses: ./.github/workflows/patch-susfs
 
