@@ -115,8 +115,8 @@ jobs:
           patch -p1 < cgroupv2_fork_to_49.patch
 
           # Patch Binder
-          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_freezer_to_49.patch
-          # patch -p1 < binder_freezer_to_49.patch
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_4_19_to_49.patch
+          patch -p1 < binder_4_19_to_49.patch
 
           # Patch LZ4KD
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4kd_to_49.patch
