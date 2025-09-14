@@ -59,7 +59,8 @@ FNR == last_match_line {
     ## android/binder_alloc.c
     drivers/android/binder_alloc.c)
         sed -i '/#include <linux\/highmem.h>/a /* REKERNEL */\n#include <../rekernel/rekernel.h>\n/* REKERNEL */' drivers/android/binder_alloc.c
-        awk '
+        if grep -q "proc_task" drivers/android/binder_alloc.c; then
+            awk '
 /struct rb_node \*n = alloc->free_buffers.rb_node;/ {
     count++;
     if (count == 2) {
@@ -72,7 +73,10 @@ FNR == last_match_line {
     print;
 }
 ' drivers/android/binder_alloc.c > drivers/android/binder_alloc.c.new
-        mv drivers/android/binder_alloc.c.new drivers/android/binder_alloc.c
+            mv drivers/android/binder_alloc.c.new drivers/android/binder_alloc.c
+        else
+            sed -i '/smp_wmb();/i struct task_struct *proc_task = NULL;' drivers/android/binder_alloc.c
+        fi
         sed -i '/if (is_async &&/i/* REKERNEL */\n\tif (is_async\n\t\t&& (alloc->free_async_space < 3 * (size + sizeof(struct binder_buffer))\n\t\t|| (alloc->free_async_space < WARN_AHEAD_SPACE))) {\n\t\trcu_read_lock();\n\t\tproc_task = find_task_by_vpid(alloc->pid);\n\t\trcu_read_unlock();\n\t\tif (proc_task != NULL && start_rekernel_server() == 0) {\n\t\t\tif (line_is_frozen(proc_task)) {\n\t \t\t\tchar binder_kmsg[PACKET_SIZE];\n\t\t\t\t\tsnprintf(binder_kmsg, sizeof(binder_kmsg), \"type=Binder,bindertype=free_buffer_full,oneway=1,from_pid=%d,from=%d,target_pid=%d,target=%d;\", current->pid, task_uid(current).val, proc_task->pid, task_uid(proc_task).val);\n\t \t\t\tsend_netlink_message(binder_kmsg, strlen(binder_kmsg));\n\t\t\t}\n\t\t}\n\t}\n/* REKERNEL */' drivers/android/binder_alloc.c
         ;;
 
