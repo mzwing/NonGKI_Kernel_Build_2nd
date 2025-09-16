@@ -60,7 +60,7 @@ FNR == last_match_line {
     drivers/android/binder_alloc.c)
         sed -i '/#include <linux\/highmem.h>/a /* REKERNEL */\n#include <../rekernel/rekernel.h>\n/* REKERNEL */' drivers/android/binder_alloc.c
         awk '
-/struct rb_node \*n/ {
+/^struct rb_node \*n = alloc->free_buffers\.rb_node;$/ || /^struct rb_node \*n;$/ {
     count++;
     if (count == 2) {
         print "/* REKERNEL */";
