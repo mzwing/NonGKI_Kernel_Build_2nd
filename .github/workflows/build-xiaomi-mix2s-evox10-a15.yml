@@ -121,7 +121,7 @@ jobs:
           # patch -p1 < binder_5_15_to_49.patch
 
           # Patch Binderfs Fixed
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/binderfs_fixed.patch
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binderfs_fixed.patch
           patch -p1 < binderfs_fixed.patch
 
           # Patch Cgroup Workingset
