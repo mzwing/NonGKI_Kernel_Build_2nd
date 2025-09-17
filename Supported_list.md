@@ -10,10 +10,10 @@
 
 **English**:  
 - OnePlus 8 OxygenOS/ColorOS 13.1 has been tested and can be used on the OnePlus 8, 8T, 8 Pro and 9R.
-- Xiaomi Mix 2S EvolutionX 10 has been backported to Cgroup V2, but Cgroup Freezer requires additional system steps to be used and the actual execution of the freezing process is abnormal. It is recommended to use Cgroup UID.
+- Xiaomi Mix 2S EvolutionX 10 has been backported to Cgroup V2 (UID and Freezer) and Binder (5.15-android13).
 - Samsung Note 10 Plus is compatible with the Exynos 9850 processor for the EU region. Do not flash this firmware onto Qualcomm-based devices.
 
 **Chinese**:  
 - 一加 8 OxygenOS/ColorOS 13.1 经测试8、8T、8 Pro、9R 都可用
-- 小米 Mix2s EvolutionX 10 已移植Cgroup V2，但Cgroup Freezer需要依赖系统额外步骤才能使用且该功能实际执行冻结过程异常，建议使用Cgroup UID
+- 小米 Mix2s EvolutionX 10 已移植Cgroup V2 (UID 和 Freezer) 以及 Binder (5.15-android13)
 - 三星 Note 10+ 适配处理器为猎户座9850，为欧盟地区版本，高通版本请勿刷入
