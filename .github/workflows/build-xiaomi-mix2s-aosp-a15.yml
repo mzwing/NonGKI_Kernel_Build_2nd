@@ -83,7 +83,7 @@ env:
 
 jobs:
   build-kernel:
-    name: Onelus 8 Series (Based AOSP A15) (Kernel 4.19)
+    name: Xiaomi Mix2s (Based AOSP A15) (Kernel 4.19)
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
