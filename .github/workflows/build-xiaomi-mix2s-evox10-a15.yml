@@ -6,7 +6,7 @@ on:
 
 env:
   # Device env
-  DEVICE_NAME : "xiaomi_mix2s_cn"
+  DEVICE_NAME : "xiaomi_mix2s"
   DEVICE_CODENAME : "polaris"
 
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
