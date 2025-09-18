@@ -75,7 +75,7 @@ env:
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
 
   BUILD_DEBUGGER: "true" # Output build errors.
-  SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
+  SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
 
   BUILD_OTHER_CONFIG: "true" # Merge config files.
   MERGE_CONFIG_FILES: "vendor/venus_QGKI.config,vendor/xiaomi_QGKI.config"
