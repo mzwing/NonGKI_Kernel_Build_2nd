@@ -207,3 +207,12 @@ runs:
               echo "Hook Image successfully !"
               ;;
           esac
+
+      - name: Upload Build Error Files
+        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: error_files
+          path: |
+            device_kernel/error.log
+            device_kernel/compile_errors_files.zip
