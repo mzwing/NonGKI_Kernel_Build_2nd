@@ -4,13 +4,11 @@
 
 echo "Starting check .rej files..."
 
-# 检查是否存在.rej文件
 if ! find . -name "*.rej" -type f | head -1 > /dev/null 2>&1; then
     echo "Current folder not found .rej"
     exit 0
 fi
 
-# 显示找到的文件
 echo "Found .rej files:"
 find . -name "*.rej" -type f
 echo "----------------------------------------"
@@ -18,7 +16,6 @@ echo "----------------------------------------"
 temp_dir=$(mktemp -d)
 echo "Create tmp folder: $temp_dir"
 
-# 计数器
 rej_count=0
 original_count=0
 missing_count=0
@@ -44,13 +41,13 @@ find . -name "*.rej" -type f -print0 | while IFS= read -r -d '' rej_file; do
     if [[ -f "$original_file" ]]; then
         mkdir -p "$(dirname "$temp_orig_path")"
         if cp "$original_file" "$temp_orig_path"; then
-            echo "  ✓ 已复制: $original_file"
+            echo "  ✓ Copied: $original_file"
             ((original_count++))
         else
-            echo "  ✗ 复制原始文件失败: $original_file"
+            echo "  ✗ Copied origin folder failed: $original_file"
         fi
     else
-        echo "  ! 原始文件不存在: $original_file"
+        echo "  ! Origin file not existed: $original_file"
         ((missing_count++))
     fi
 
@@ -85,7 +82,6 @@ archive_name="rej_files.tar.gz"
 
 echo "Create null archive: $archive_name"
 
-# 创建压缩包
 if tar -czf "$archive_name" -C "$temp_dir" .; then
     echo "✓ Create archive successfully: $archive_name"
 
@@ -95,7 +91,7 @@ if tar -czf "$archive_name" -C "$temp_dir" .; then
     echo "Archive content:"
     tar -tzf "$archive_name" | head -20
     if [[ $(tar -tzf "$archive_name" | wc -l) -gt 20 ]]; then
-        echo "... (共 $(tar -tzf "$archive_name" | wc -l) 个文件)"
+        echo "... (Total $(tar -tzf "$archive_name" | wc -l) file(s))"
     fi
 
 else
@@ -104,7 +100,6 @@ else
     exit 1
 fi
 
-# 清理临时目录
 echo "Cleaning tmp folder: $temp_dir"
 rm -rf "$temp_dir"
 

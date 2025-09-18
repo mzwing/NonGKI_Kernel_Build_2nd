@@ -215,4 +215,4 @@ runs:
           name: error_files
           path: |
             device_kernel/error.log
-            device_kernel/compile_errors_files.zip
+            device_kernel/rej_files.tar.gz
