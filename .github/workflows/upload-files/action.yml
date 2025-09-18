@@ -3,15 +3,6 @@ name: 'Upload files.'
 runs:
   using: 'composite'
   steps:
-      - name: Upload Build Error Files
-        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: error_files
-          path: |
-            device_kernel/error.log
-            device_kernel/compile_errors_files.zip
-
       - name: Upload Build Artifacts For Anykernel3
         if: env.PACK_METHOD == 'Anykernel3'
         uses: actions/upload-artifact@v4
