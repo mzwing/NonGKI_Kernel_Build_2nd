@@ -33,6 +33,9 @@ env:
   KERNELSU_BRANCH : "susfs-main"
   KERNELSU_NAME : "KernelSU"
 
+  KERNELSU_AUTO_GET : "false"
+  KERNELSU_AUTO_FORK : "" # magic, rsuntk and sukisu
+
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
   SUSFS_UPDATE : true
@@ -94,10 +97,10 @@ jobs:
       - name: ⏰ Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⌛️ Execuate common process
+      - name: ⌛️ Compilation environment preparation
         uses: ./.github/workflows/build-env
 
-      - name: ⚙️ Compilation preparation
+      - name: ⚙️ Get neccssary tools
         uses: ./.github/workflows/build-ready
 
       - name: 🔗 Patch for no-kprobe
