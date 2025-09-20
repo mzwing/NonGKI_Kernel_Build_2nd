@@ -33,6 +33,9 @@ env:
   KERNELSU_BRANCH : "12124+155"
   KERNELSU_NAME : "KernelSU"
 
+  KERNELSU_AUTO_GET : "true"
+  KERNELSU_AUTO_FORK : "magic" # magic, rsuntk and sukisu
+
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
   SUSFS_UPDATE : false

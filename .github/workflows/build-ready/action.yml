@@ -93,34 +93,127 @@ runs:
           SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
           SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
 
+          # Function
+          KERNELSU_GIT(){
+            local KERNELSU_AUTHOR="$1"
+            local KERNELSU_BRANCH="$2"
+            local KERNELSU_NAME="$3"
+            git clone "https://github.com/$KERNELSU_AUTHOR/$KERNELSU_NAME.git" -b "$KERNELSU_BRANCH" KernelSU
+          }
+          KERNELSU_SHELL(){
+            local KERNELSU_AUTHOR="$1"
+            local KERNELSU_BRANCH_ORIGIN="$2"
+            local KERNELSU_BRANCH="$3"
+            local KERNELSU_NAME="$4"
+            curl -sSL "https://raw.githubusercontent.com/$KERNELSU_AUTHOR/$KERNELSU_NAME/refs/heads/$KERNELSU_BRANCH_ORIGIN/kernel/setup.sh" | bash -s $KERNELSU_BRANCH
+          }
+          KERNELSU_MANUAL_INSTALL(){
+            local KERNELSU_AUTHOR="$1"
+            local KERNELSU_BRANCH="$2"
+            local KERNELSU_NAME="$3"
+            rm -rf *KernelSU*
+            git clone "https://github.com/$KERNELSU_AUTHOR/$KERNELSU_NAME.git" -b "$KERNELSU_BRANCH" KernelSU
+            ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/KernelSU/kernel")" "kernelsu"
+            grep -q "kernelsu" "$GITHUB_WORKSPACE/device_kernel/drivers/Makefile" || printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> $GITHUB_WORKSPACE/device_kernel/drivers/Makefile
+            grep -q "source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACE/device_kernel/drivers/Kconfig" || sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACEdevice_kernel/drivers/Kconfig"
+            echo "KernelSU Settings done."
+          }
+
+          # Core
           if [[ ${{ env.KERNELSU_METHOD }} == "shell" ]]; then
-            if [[ "${{ env.KERNELSU_SOURCE }}" != *".sh" ]]; then
+            if [[ "${{ env.KERNELSU_SOURCE }}" != *".sh" ]] && [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 echo "You need to provide a link ending with .sh, not one ending with .git or any other extension !"
                 false
-            else
+            elif [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 curl -sSL ${{ env.KERNELSU_SOURCE }} | bash -s ${{ env.KERNELSU_BRANCH }}
+            else
+                if [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "magic" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
+                        curl -sSL "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s "$KERNELSU_BRANCH"
+                    else
+                        KERNELSU_SHELL backslashxx master KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "rsuntk" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_SHELL rsuntk susfs-main KernelSU
+                    else
+                        KERNELSU_SHELL rsuntk main KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "sukisu" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_SHELL SukiSU-Ultra susfs-main SukiSU-Ultra
+                    else
+                        KERNELSU_SHELL SukiSU-Ultra main SukiSU-Ultra
+                    fi
+                else
+                fi
             fi
           elif [[ ${{ env.KERNELSU_METHOD }} == "manual" ]]; then
-            if [[ "${{ env.KERNELSU_SOURCE }}" != *".git" ]]; then
+            if [[ "${{ env.KERNELSU_SOURCE }}" != *".git" ]] && [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 echo "You need to provide a link ending with .git, not one ending with .sh or any other extension !"
                 false
-            else
-                rm -rf KernelSU
-                git clone ${{ env.KERNELSU_SOURCE }} -b ${{ env.KERNELSU_BRANCH }} ${{ env.KERNELSU_NAME }}
+            elif [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
+                rm -rf *KernelSU*
+                git clone "${{ env.KERNELSU_SOURCE }}" -b "${{ env.KERNELSU_BRANCH }}" "${{ env.KERNELSU_NAME }}"
                 ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/${{ env.KERNELSU_NAME }}/kernel")" "kernelsu"
                 grep -q "kernelsu" "$GITHUB_WORKSPACE/device_kernel/drivers/Makefile" || printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> $GITHUB_WORKSPACE/device_kernel/drivers/Makefile
-                grep -q "source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACE/device_kernel/drivers/Kconfig" || sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACE/device_kernel/drivers/Kconfig"
+                grep -q "source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACE/device_kernel/drivers/Kconfig" || sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACEdevice_kernel/drivers/Kconfig"
                 echo "KernelSU Settings done."
+            else
+                if [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "magic" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
+                        KERNELSU_MANUAL_INSTALL backslashxx $KERNELSU_BRANCH KernelSU
+                    else
+                        KERNELSU_MANUAL_INSTALL backslashxx master KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "rsuntk" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_MANUAL_INSTALL rsuntk susfs-main KernelSU
+                    else
+                        KERNELSU_MANUAL_INSTALL rsuntk main KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "sukisu" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_MANUAL_INSTALL SukiSU-Ultra susfs-main SukiSU-Ultra
+                    else
+                        KERNELSU_MANUAL_INSTALL SukiSU-Ultra main SukiSU-Ultra
+                    fi
+                else
+                fi
             fi
           elif [[ ${{ env.KERNELSU_METHOD }} == "only" ]];then
-            if [[ "${{ env.KERNELSU_SOURCE }}" != *".git" ]]; then
+            if [[ "${{ env.KERNELSU_SOURCE }}" != *".git" ]] && [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 echo "You need to provide a link ending with .git, not one ending with .sh or any other extension !"
                 false
-            else
+            elif [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 rm -rf *KernelSU* && rm -rf drivers/kernelsu
                 git clone ${{ env.KERNELSU_SOURCE }} -b ${{ env.KERNELSU_BRANCH }} ${{ env.KERNELSU_NAME }}
                 ln -sf ../${{ env.KERNELSU_NAME }}/kernel drivers/kernelsu
                 echo "KernelSU git done."
+            else
+                if [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "magic" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
+                        KERNELSU_GIT backslashxx $KERNELSU_BRANCH KernelSU
+                    else
+                        KERNELSU_GIT backslashxx master KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "rsuntk" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_GIT rsuntk susfs-main KernelSU
+                    else
+                        KERNELSU_GIT rsuntk main KernelSU
+                    fi
+                elif [[ ${{ env.KERNELSU_AUTO_PROJECT }} == "sukisu" ]]; then
+                    if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+                        KERNELSU_GIT SukiSU-Ultra susfs-main SukiSU-Ultra
+                    else
+                        KERNELSU_GIT SukiSU-Ultra main SukiSU-Ultra
+                    fi
+                else
+                fi
             fi
           else
             false
