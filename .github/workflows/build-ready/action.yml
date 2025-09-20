@@ -136,15 +136,15 @@ runs:
                     fi
                 elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "rsuntk" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
-                        KERNELSU_SHELL rsuntk susfs-main KernelSU
+                        KERNELSU_SHELL rsuntk main susfs-main KernelSU
                     else
-                        KERNELSU_SHELL rsuntk main KernelSU
+                        KERNELSU_SHELL rsuntk main main KernelSU
                     fi
                 elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "sukisu" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
-                        KERNELSU_SHELL SukiSU-Ultra susfs-main SukiSU-Ultra
+                        KERNELSU_SHELL SukiSU-Ultra main susfs-main SukiSU-Ultra
                     else
-                        KERNELSU_SHELL SukiSU-Ultra main SukiSU-Ultra
+                        KERNELSU_SHELL SukiSU-Ultra main main SukiSU-Ultra
                     fi
                 else
                     echo "u need input vaild KERNELSU_AUTO_FORK."
