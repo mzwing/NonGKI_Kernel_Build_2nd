@@ -147,6 +147,8 @@ runs:
                         KERNELSU_SHELL SukiSU-Ultra main SukiSU-Ultra
                     fi
                 else
+                    echo "u need input vaild KERNELSU_AUTO_FORK."
+                    false
                 fi
             fi
           elif [[ ${{ env.KERNELSU_METHOD }} == "manual" ]]; then
@@ -181,6 +183,8 @@ runs:
                         KERNELSU_MANUAL_INSTALL SukiSU-Ultra main SukiSU-Ultra
                     fi
                 else
+                    echo "u need input vaild KERNELSU_AUTO_FORK."
+                    false
                 fi
             fi
           elif [[ ${{ env.KERNELSU_METHOD }} == "only" ]];then
@@ -213,6 +217,8 @@ runs:
                         KERNELSU_GIT SukiSU-Ultra main SukiSU-Ultra
                     fi
                 else
+                    echo "u need input vaild KERNELSU_AUTO_FORK."
+                    false
                 fi
             fi
           else
