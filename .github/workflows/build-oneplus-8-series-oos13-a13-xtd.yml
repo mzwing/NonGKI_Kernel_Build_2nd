@@ -30,7 +30,7 @@ env:
   DEFCONFIG_FROM_BOOT: false
 
   KERNELSU_SOURCE : "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh"
-  KERNELSU_BRANCH : "12107+155"
+  KERNELSU_BRANCH : "12124+155"
   KERNELSU_NAME : "KernelSU"
 
   SUSFS_ENABLE : true
