@@ -129,13 +129,17 @@ jobs:
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroup_workingset.patch
           patch -p1 < cgroup_workingset.patch
 
-          # Patch LZ4K LZ4OPLUS LZ4K
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4k_to_49_fork.patch
-          patch -p1 < lz4k_to_49_fork.patch
-
           # Patch LZ4 Updated
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4_1100_to_49.patch
           patch -p1 < lz4_1100_to_49.patch
+
+          # Patch LZ4K LZ4OPLUS LZ4K
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4k_kd_oplus_to_49.patch
+          patch -p1 < lz4k_kd_oplus_to_49.patch || true
+
+          # Patch LZ4 Fixed
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/lz4_fixed.patch
+          patch -p1 < lz4_fixed.patch || true
 
           # Patch Simple LMK
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/simple_lmk_to_49.patch
