@@ -6,7 +6,7 @@ runs:
       - name: Check System OS
         shell: bash
         run: |
-          lsb_release -a
+          cat /etc/os-release
           . /etc/os-release
 
           if [ "$ID" = "ubuntu" ]; then
@@ -28,7 +28,7 @@ runs:
           fi
 
       - name: Remove useless tools
-        if: env.SYSTEM_VERSION == 'newer'
+        if: env.SYSTEM_VERSION == 'newer' || env.SYSTEM_VERSION == 'older'
         shell: bash
         run: |
           sudo rm -rf /opt/hostedtoolcache
@@ -49,6 +49,11 @@ runs:
         shell: bash
         run: |
           if [ "${{ env.SYSTEM_VERSION }}" == "oldest" ]; then
+            # Tzdata
+            TZ=America/Los_Angeles
+            ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
+            echo "$TZ" > /etc/timezone
+
             apt-get update
             apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler wget curl cpio -y
             apt-get install p7zip p7zip-full -y
