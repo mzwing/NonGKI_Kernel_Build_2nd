@@ -33,8 +33,8 @@ env:
   KERNELSU_BRANCH : "v0.9.5"
   KERNELSU_NAME : "KernelSU"
 
-  KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
-  KERNELSU_AUTO_FORK : "magic" # magic, rsuntk and sukisu
+  KERNELSU_AUTO_GET : "false" # if u want easy setting kernelsu, u can true.
+  KERNELSU_AUTO_FORK : "" # magic, rsuntk and sukisu
 
   SUSFS_ENABLE : false
   SUSFS_FIXED : false
