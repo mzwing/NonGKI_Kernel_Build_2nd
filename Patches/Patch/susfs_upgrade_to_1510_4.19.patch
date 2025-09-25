@@ -881,20 +881,18 @@ index a22c4e4..c2e8bb9 100644
  /* susfs_init */
  void susfs_init(void);
 diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
-index 3fcd878..0c0d825 100644
+index 3fcd878..2a2e99b 100644
 --- a/include/linux/susfs_def.h
 +++ b/include/linux/susfs_def.h
-@@ -10,8 +10,8 @@
+@@ -10,6 +10,7 @@
  #define CMD_SUSFS_ADD_SUS_PATH 0x55550
  #define CMD_SUSFS_SET_ANDROID_DATA_ROOT_PATH 0x55551
  #define CMD_SUSFS_SET_SDCARD_ROOT_PATH 0x55552
 +#define CMD_SUSFS_ADD_SUS_PATH_LOOP 0x55553
  #define CMD_SUSFS_ADD_SUS_MOUNT 0x55560
--#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561
+ #define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561
  #define CMD_SUSFS_ADD_SUS_KSTAT 0x55570
- #define CMD_SUSFS_UPDATE_SUS_KSTAT 0x55571
- #define CMD_SUSFS_ADD_SUS_KSTAT_STATICALLY 0x55572
-@@ -20,10 +20,10 @@
+@@ -20,10 +21,10 @@
  #define CMD_SUSFS_ENABLE_LOG 0x555a0
  #define CMD_SUSFS_SET_CMDLINE_OR_BOOTCONFIG 0x555b0
  #define CMD_SUSFS_ADD_OPEN_REDIRECT 0x555c0
@@ -906,7 +904,7 @@ index 3fcd878..0c0d825 100644
  
  #define SUSFS_MAX_LEN_PATHNAME 256 // 256 should address many paths already unless you are doing some strange experimental stuff, then set your own desired length
  #define SUSFS_FAKE_CMDLINE_OR_BOOTCONFIG_SIZE 4096
-@@ -36,20 +36,23 @@
+@@ -36,20 +37,23 @@
  #define DEFAULT_SUS_MNT_GROUP_ID 1000 /* used by mount->mnt_group_id */
  
  /*
@@ -937,7 +935,7 @@ index 3fcd878..0c0d825 100644
  #define BIT_ANDROID_DATA_ROOT_DIR BIT(28)
  #define BIT_ANDROID_SDCARD_ROOT_DIR BIT(29)
  
-@@ -64,4 +67,20 @@
+@@ -64,4 +68,20 @@
  #define DATA_ADB_NO_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT "/data/adb/susfs_no_auto_add_sus_ksu_default_mount"
  #define DATA_ADB_NO_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT "/data/adb/susfs_no_auto_add_try_umount_for_bind_mount"
  
