@@ -6,12 +6,10 @@
 # 20250821
 
 patch_files=(
-    fs/exec.c
     fs/open.c
     fs/read_write.c
     fs/stat.c
     drivers/input/input.c
-    drivers/tty/pty.c
     security/selinux/hooks.c
 )
 
@@ -29,50 +27,6 @@ for i in "${patch_files[@]}"; do
     case $i in
 
     # fs/ changes
-    ## exec.c
-    fs/exec.c)
-        sed -i '/#include <trace\/events\/sched.h>/a \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n#include <..\/drivers\/kernelsu\/ksu_trace.h>\n#endif' fs/exec.c
-        if grep -q "do_execveat_common" fs/exec.c; then
-            awk '
-/return do_execveat_common\(AT_FDCWD, filename, argv, envp, 0\);/ {
-    count++;
-    if (count == 1) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_hook((int *)AT_FDCWD, &filename, &argv, &envp, 0);";
-        print "#endif";
-    } else if (count == 2) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_sucompat_hook((int *)AT_FDCWD, &filename, NULL, NULL, NULL); /* 32-bit su */";
-        print "#endif";
-    }
-}
-{
-    print;
-}
-' fs/exec.c > fs/exec.c.new
-            mv fs/exec.c.new fs/exec.c
-        else
-awk '
-/return do_execve_common\(filename, argv, envp\);/ {
-    count++;
-    if (count == 1) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_hook((int *)AT_FDCWD, &filename, &argv, &envp, 0);";
-        print "#endif";
-    } else if (count == 2) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_sucompat_hook((int *)AT_FDCWD, &filename, NULL, NULL, NULL); /* 32-bit su */";
-        print "#endif";
-    }
-}
-{
-    print;
-}
-' fs/exec.c > fs/exec.c.new
-            mv fs/exec.c.new fs/exec.c
-        fi
-        ;;
-
     ## open.c
     fs/open.c)
         sed -i '/#include "internal.h"/a \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n#include <..\/drivers\/kernelsu\/ksu_trace.h>\n#endif' fs/open.c
@@ -111,22 +65,6 @@ awk '
         sed -i '/#include "input-compat.h"/a \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n#include <..\/..\/drivers\/kernelsu\/ksu_trace.h>\n#endif' drivers/input/input.c
         sed -i '0,/if (is_event_supported(type, dev->evbit, EV_MAX)) {/ { /if (is_event_supported(type, dev->evbit, EV_MAX)) {/i \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n\ttrace_ksu_trace_input_hook(&type, &code, &value);\n#endif
                                            }' drivers/input/input.c
-        ;;
-
-    ## pty/pty.c
-    drivers/tty/pty.c)
-        if [ "$FIRST_VERSION" -lt 5 ] && [ "$SECOND_VERSION" -lt 10 ]; then
-            sed -i '/#include <linux\/poll.h>/a \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n#include <..\/..\/drivers\/kernelsu\/ksu_trace.h>\n#endif' drivers/tty/pty.c
-        else
-            sed -i '/#include <linux\/compat.h>/a \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n#include <..\/..\/drivers\/kernelsu\/ksu_trace.h>\n#endif' drivers/tty/pty.c
-        fi
-
-        sed -i '/mutex_lock(&devpts_mutex);/ {
-                                               N
-                                               /\n[[:space:]]*tty = devpts_get_priv(file->f_path.dentry);/ {
-                                                   i \#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)\n\t\ttrace_ksu_trace_devpts_hook((struct inode \*)file->f_path.dentry->d_inode);\n#endif
-                                               }
-                                           }' drivers/tty/pty.c
         ;;
 
     # security/ changes
