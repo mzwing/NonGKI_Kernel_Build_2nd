@@ -10,13 +10,13 @@ env:
   DEVICE_CODENAME : "polaris"
 
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
-  EXTRA_CMDS : "LD=ld.lld"
+  EXTRA_CMDS : "LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/Evolution-X-Devices/kernel_xiaomi_sdm845.git"
   KERNEL_BRANCH : "vic"
 
-  CLANG_SOURCE : "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git"
-  CLANG_BRANCH : "lineage-20.0"
+  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
+  CLANG_BRANCH : ""
 
   GCC_GNU : false
   GCC_64_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.git"
@@ -153,8 +153,8 @@ jobs:
           patch -p1 < simple_lmk_to_49.patch || true
 
           # Patch Wireguard Fixed
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/wireguard_fixed.patch
-          patch -p1 < wireguard_fixed.patch || true
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/wireguard_fixed.patch
+          # patch -p1 < wireguard_fixed.patch || true
 
           # Binder
           sed -i '/^CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"$/d' ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
