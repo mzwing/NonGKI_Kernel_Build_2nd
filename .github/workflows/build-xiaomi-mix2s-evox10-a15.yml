@@ -118,7 +118,7 @@ jobs:
 
           # Patch Cgroup V2
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_fork_to_49.patch
-          patch -p1 < cgroupv2_fork_to_49.patch
+          patch -p1 < cgroupv2_fork_to_49.patch || true
 
           # Patch Binder 54 A11
           # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_5_4_a11_to_49.patch
