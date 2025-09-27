@@ -3,10 +3,42 @@ name: 'Set up the system environment for compilation.'
 runs:
   using: 'composite'
   steps:
+      - name: Output System OS
+        shell: bash
+        run: |
+          title() {
+              echo -e "\033[1;36m"
+              echo "╔══════════════════════════════════════════════════════════╗"
+              echo "║                    $1                    ║"
+              echo "╚══════════════════════════════════════════════════════════╝"
+              echo -e "\033[1;36m"
+          }
+
+          footer(){
+              echo -e "\033[1;36m"
+              echo "╔══════════════════════════════════════════════════════════╗"
+              echo "║                                                          ║"
+              echo "╚══════════════════════════════════════════════════════════╝"
+              echo -e "\033[1;36m"
+          }
+
+          context() {
+              echo -e "\033[0m $1: \033[1;37m$2\033[0m"
+          }
+
+          . /etc/os-release
+
+          title "System Information"
+          context "OS" "$PRETTY_NAME"
+          context "User" "$(whoami)"
+          context "Current Folder" "$(pwd)"
+          context "Shell" "$SHELL"
+
+          footer
+
       - name: Check System OS
         shell: bash
         run: |
-          cat /etc/os-release
           . /etc/os-release
 
           if [ "$ID" = "ubuntu" ]; then
@@ -17,13 +49,13 @@ runs:
               elif [ "$VERSION_ID" = "24.04" ]; then
                   echo "SYSTEM_VERSION=newer" >> $GITHUB_ENV
               else
-                  echo "Not Supported: $VERSION_ID"
+                  echo "\033[0;31m❌ Not Supported: $VERSION_ID"
                   false
               fi
           elif [ "$ID" = "arch" ]; then
               echo "SYSTEM_VERSION=arch" >> $GITHUB_ENV
           else
-              echo "Not Supported: $PRETTY_NAME"
+              echo "\033[0;31m❌ Not Supported: $PRETTY_NAME"
               false
           fi
 
