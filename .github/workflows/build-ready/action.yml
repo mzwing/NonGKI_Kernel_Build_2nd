@@ -127,20 +127,20 @@ runs:
             elif [[ ${{ env.KERNELSU_AUTO_GET }} != "true" ]]; then
                 curl -sSL ${{ env.KERNELSU_SOURCE }} | bash -s ${{ env.KERNELSU_BRANCH }}
             else
-                if [[ ${{ env.KERNELSU_AUTO_FORK }} == "magic" ]]; then
+                if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
                         curl -sSL "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s "$KERNELSU_BRANCH"
                     else
                         KERNELSU_SHELL backslashxx master KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "rsuntk" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_SHELL rsuntk main susfs-main KernelSU
                     else
                         KERNELSU_SHELL rsuntk main main KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "sukisu" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_SHELL SukiSU-Ultra main susfs-main SukiSU-Ultra
                     else
@@ -163,20 +163,20 @@ runs:
                 grep -q "source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACE/device_kernel/drivers/Kconfig" || sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" "$GITHUB_WORKSPACEdevice_kernel/drivers/Kconfig"
                 echo "KernelSU Settings done."
             else
-                if [[ ${{ env.KERNELSU_AUTO_FORK }} == "magic" ]]; then
+                if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
                         KERNELSU_MANUAL_INSTALL backslashxx $KERNELSU_BRANCH KernelSU
                     else
                         KERNELSU_MANUAL_INSTALL backslashxx master KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "rsuntk" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_MANUAL_INSTALL rsuntk susfs-main KernelSU
                     else
                         KERNELSU_MANUAL_INSTALL rsuntk main KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "sukisu" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_MANUAL_INSTALL SukiSU-Ultra susfs-main SukiSU-Ultra
                     else
@@ -197,20 +197,20 @@ runs:
                 ln -sf ../${{ env.KERNELSU_NAME }}/kernel drivers/kernelsu
                 echo "KernelSU git done."
             else
-                if [[ ${{ env.KERNELSU_AUTO_FORK }} == "magic" ]]; then
+                if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
                         KERNELSU_GIT backslashxx $KERNELSU_BRANCH KernelSU
                     else
                         KERNELSU_GIT backslashxx master KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "rsuntk" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_GIT rsuntk susfs-main KernelSU
                     else
                         KERNELSU_GIT rsuntk main KernelSU
                     fi
-                elif [[ ${{ env.KERNELSU_AUTO_FORK }} == "sukisu" ]]; then
+                elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_GIT SukiSU-Ultra susfs-main SukiSU-Ultra
                     else
@@ -291,12 +291,12 @@ runs:
 
           echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "# CONFIG_KPROBES is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.HOOK_METHOD }}" == "tracepoint" ]]; then
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] && [[ "${{ env.HOOK_METHOD }}" == "tracepoint" ]]; then
             echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          elif [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
+          elif [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           fi
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.KPM_ENABLE }}" == "true" ]]; then
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] && [[ "${{ env.KPM_ENABLE }}" == "true" ]]; then
             echo "CONFIG_KALLSYMS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           fi
