@@ -53,6 +53,7 @@ jobs:
         | Redmi K20 Pro | raphael | 4.14 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | Syscall |
         | Samsung Note 10 Plus | d2s | 4.14 | OneUI 7 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ | Tracepoint |
         | Xiaomi 11 | venus | 5.4 | Evolution X 11.X | 16 | AnyKernel3 | SukiSU(U) | ✅ | ✅ | ✅ | Tracepoint |
+        | Smartisan U3 Pro | osborn | 4.4 | Lineage OS 18 | 11 | AnyKernel3 | SukiSU(U) | ❌ | ❌ | ❌ | Normal |
 
         - Specific device information: [Supported List](Supported_list.md).
         - The KernelSU version is for reference only. It is normal for the KernelSU version embedded in SUSFS to be lower.
