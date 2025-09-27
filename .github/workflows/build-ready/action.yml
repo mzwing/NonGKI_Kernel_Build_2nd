@@ -291,12 +291,12 @@ runs:
 
           echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "# CONFIG_KPROBES is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.HOOK_METHOD }}" == "tracepoint" ]]; then
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] && [[ "${{ env.HOOK_METHOD }}" == "tracepoint" ]]; then
             echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          elif [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
+          elif [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           fi
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] && [[ "${{ env.KPM_ENABLE }}" == "true" ]]; then
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] && [[ "${{ env.KPM_ENABLE }}" == "true" ]]; then
             echo "CONFIG_KALLSYMS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           fi
