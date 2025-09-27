@@ -144,7 +144,7 @@ runs:
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_SHELL SukiSU-Ultra main susfs-main SukiSU-Ultra
                     else
-                        KERNELSU_SHELL SukiSU-Ultra main main SukiSU-Ultra
+                        KERNELSU_SHELL SukiSU-Ultra main nongki SukiSU-Ultra
                     fi
                 else
                     echo "u need input vaild KERNELSU_AUTO_FORK."
@@ -180,7 +180,7 @@ runs:
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_MANUAL_INSTALL SukiSU-Ultra susfs-main SukiSU-Ultra
                     else
-                        KERNELSU_MANUAL_INSTALL SukiSU-Ultra main SukiSU-Ultra
+                        KERNELSU_MANUAL_INSTALL SukiSU-Ultra nongki SukiSU-Ultra
                     fi
                 else
                     echo "u need input vaild KERNELSU_AUTO_FORK."
@@ -214,7 +214,7 @@ runs:
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                         KERNELSU_GIT SukiSU-Ultra susfs-main SukiSU-Ultra
                     else
-                        KERNELSU_GIT SukiSU-Ultra main SukiSU-Ultra
+                        KERNELSU_GIT SukiSU-Ultra nongki SukiSU-Ultra
                     fi
                 else
                     echo "u need input vaild KERNELSU_AUTO_FORK."
