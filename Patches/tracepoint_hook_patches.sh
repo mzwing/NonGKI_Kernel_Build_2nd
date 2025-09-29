@@ -41,7 +41,6 @@ for i in "${patch_files[@]}"; do
         print "#endif";
     } else if (count == 2) {
         print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_sucompat_hook((int *)AT_FDCWD, &filename, NULL, NULL, NULL); /* 32-bit su */";
         print "#endif";
     }
 }
@@ -60,7 +59,6 @@ awk '
         print "#endif";
     } else if (count == 2) {
         print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "\ttrace_ksu_trace_execveat_sucompat_hook((int *)AT_FDCWD, &filename, NULL, NULL, NULL); /* 32-bit su */";
         print "#endif";
     }
 }
