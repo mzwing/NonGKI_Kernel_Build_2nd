@@ -122,7 +122,10 @@ runs:
           # Kernel Version Check
           if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
             if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
-                echo "Your device cannot supported SukiSU-Ultra!"
+                if grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
+                    echo "Your device cannot supported SukiSU-Ultra!"
+                    echo "You need merge patch about task_alloc."
+                    false
             fi
           fi
 
@@ -136,10 +139,8 @@ runs:
             else
                 if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
-                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
-                        curl -sSL "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s "$KERNELSU_BRANCH"
-                    else
-                        KERNELSU_SHELL backslashxx master KernelSU
+                        echo "magic not supported SuSFS!"
+                        false
                     fi
                 elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
@@ -172,8 +173,8 @@ runs:
             else
                 if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
-                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
-                        KERNELSU_MANUAL_INSTALL backslashxx $KERNELSU_BRANCH KernelSU
+                        echo "magic not supported SuSFS!"
+                        false
                     else
                         KERNELSU_MANUAL_INSTALL backslashxx master KernelSU
                     fi
@@ -206,8 +207,8 @@ runs:
             else
                 if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                     if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
-                        KERNELSU_BRANCH=$(git ls-remote --heads "https://github.com/backslashxx/KernelSU.git" | grep -oE 'refs/heads/[0-9]+\+155$' | sed 's|refs/heads/||' | sort -t+ -k1,1n | tail -1)
-                        KERNELSU_GIT backslashxx $KERNELSU_BRANCH KernelSU
+                        echo "magic not supported SuSFS!"
+                        false
                     else
                         KERNELSU_GIT backslashxx master KernelSU
                     fi
