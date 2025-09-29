@@ -3,6 +3,32 @@ name: 'Patch SuSFS for Kernel.'
 runs:
   using: 'composite'
   steps:
+      - name: Get SuSFS
+        if: env.SUSFS_ENABLE == 'true'
+        shell: bash
+        run: |
+          # Variable
+          SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
+          SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
+
+          # Core
+          if [[ "${{ env.SUSFS_FIXED }}" == true ]]; then
+            if [ -z "${{ env.PATCHES_SOURCE }}" ] || [ -z "${{ env.PATCHES_BRANCH }}" ]; then
+              echo "Please input vaild source and branch!"
+              false
+            elif [[ "${{ env.PATCHES_SOURCE }}" == *".git" ]]; then
+              echo "Please do not set a full URL in PATCH_SOURCE!"
+              false
+            else
+              git clone https://github.com/${{ env.PATCHES_SOURCE }}.git -b ${{ env.PATCHES_BRANCH }} NonGKI_Kernel_Patches --depth=1 # It's not necessary.
+            fi
+          fi
+          git clone $SUSFS_SOURCE -b $SUSFS_BRANCH susfs4ksu --depth=1
+
+          # Copy
+          cp susfs4ksu/kernel_patches/fs/* fs/
+          cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+
       - name: Patch SuSFS
         if: env.SUSFS_ENABLE == 'true'
         shell: bash
