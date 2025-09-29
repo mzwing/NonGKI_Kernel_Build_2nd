@@ -10,7 +10,7 @@
 
 > [!NOTE]
 > **版本：2.0**  
-> **获取示例：[sample](https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/tree/sample)**
+> **获取示例：[sample](https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/tree/sample)**  
 
 ### 简介  
 本项目建立之初，目标就是为了更多**Non-GKI内核**提供相对稳定的**KernelSU**以及**SuSFS**的编译更新渠道  
