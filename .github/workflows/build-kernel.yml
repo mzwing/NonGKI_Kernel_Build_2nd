@@ -18,12 +18,12 @@ jobs:
     secrets: inherit
 
   # Xiaomi
-  build-xiaomi-mix2s-evox10-a15:
-    name: "Xiaomi Mix2s (Evolution X 10 A15)"
-    strategy:
-      fail-fast: true
-    uses: ./.github/workflows/build-xiaomi-mix2s-evox10-a15.yml
-    secrets: inherit
+  #build-xiaomi-mix2s-evox10-a15:
+  #  name: "Xiaomi Mix2s (Evolution X 10 A15)"
+  #  strategy:
+  #    fail-fast: true
+  #  uses: ./.github/workflows/build-xiaomi-mix2s-evox10-a15.yml
+  #  secrets: inherit
 
   build-xiaomi-11ultra-hyperos-a14:
     name: "Xiaomi 11 Ultra (HyperOS A14)"
