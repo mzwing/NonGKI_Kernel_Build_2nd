@@ -123,7 +123,6 @@ runs:
           if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
             if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
                 echo "Your device cannot supported SukiSU-Ultra!"
-                false
             fi
           fi
 
