@@ -94,6 +94,7 @@ runs:
             if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                 KERNELSU_AUTHOR="backslashxx"
                 KERNELSU_NAME="KernelSU"
+                KERNELSU_ORIGIN_BRANCH="master"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     echo "Magic doesn't support SuSFS! "
                     false
@@ -101,20 +102,26 @@ runs:
                     KERNELSU_BRANCH="master"
                 fi
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
-                KERNELSU_AUTHOR="backslashxx"
+                KERNELSU_AUTHOR="rsuntk"
                 KERNELSU_NAME="KernelSU"
+                KERNELSU_ORIGIN_BRANCH="main"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
-                    KERNELSU_BRANCH="susfs-main"
+                    if [[ "${{ env.SUSFS_UPDATE }}" == "true" ]]; then
+                        KERNELSU_BRANCH="susfs-main"
+                    else
+                        KERNELSU_BRANCH="susfs-legacy"
+                    fi
                 else
-                    KERNELSU_BRANCH="master"
+                    KERNELSU_BRANCH="main"
                 fi
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
-                KERNELSU_AUTHOR="backslashxx"
-                KERNELSU_NAME="KernelSU"
+                KERNELSU_AUTHOR="SukiSU-Ultra"
+                KERNELSU_NAME="SukiSU-Ultra"
+                KERNELSU_ORIGIN_BRANCH="main"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     KERNELSU_BRANCH="susfs-main"
                 else
-                    KERNELSU_BRANCH="master"
+                    KERNELSU_BRANCH="main"
                 fi
             else
                 echo "Please input vaild fork name!"
@@ -122,7 +129,7 @@ runs:
             fi
 
             if [[ "${{ env.KERNELSU_METHOD }}" == "shell" ]]; then
-                curl -sSL "https://raw.githubusercontent.com/$KERNELSU_AUTHOR/$KERNELSU_NAME/refs/heads/$KERNELSU_NAME/kernel/setup.sh" | bash -s $KERNELSU_BRANCH
+                curl -sSL "https://raw.githubusercontent.com/$KERNELSU_AUTHOR/$KERNELSU_NAME/refs/heads/$KERNELSU_ORIGIN_BRANCH/kernel/setup.sh" | bash -s "$KERNELSU_BRANCH"
             elif [[ "${{ env.KERNELSU_METHOD }}" == "manual" ]]; then
                 rm -rf *KernelSU*
                 git clone "https://github.com/$KERNELSU_AUTHOR/$KERNELSU_NAME.git" -b "$KERNELSU_BRANCH" KernelSU
@@ -150,10 +157,37 @@ runs:
             fi
           }
 
+
           # Core
           if [[ ${{ env.KERNELSU_AUTO_GET }} == "true" ]]; then
+
+            if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+                if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
+                    if grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
+                        echo "Your device supported SukiSU-Ultra!"
+                    else
+                        echo "Your device cannot supported SukiSU-Ultra!"
+                        echo "You need merge patch about task_alloc."
+                    false
+                    fi
+                fi
+            fi
+
             KERNELSU_AUTO
           else
+
+            if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+                if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
+                    if grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
+                        echo "Your device supported SukiSU-Ultra!"
+                    else
+                        echo "Your device cannot supported SukiSU-Ultra!"
+                        echo "You need merge patch about task_alloc."
+                    false
+                    fi
+                fi
+            fi
+
             KERNELSU_MANUAL
           fi
           echo "KERNELSU_METHOD=${{ env.KERNELSU_METHOD }}" >> $GITHUB_ENV
