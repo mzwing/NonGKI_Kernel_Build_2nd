@@ -14,8 +14,10 @@
 - OnePlus 8 OxygenOS/ColorOS 13.1 has been tested and can be used on the OnePlus 8, 8T, 8 Pro and 9R.
 - Xiaomi Mix 2S EvolutionX 10 has been backported to Cgroup V2 (UID and Freezer) ,Binder (5.15-android13) and LZ4 (Updated to 1.10.0, LZ4K, LZ4K_OPLUS, LZ4KD).
 - Samsung Note 10 Plus is compatible with the Exynos 9850 processor for the EU region. Do not flash this firmware onto Qualcomm-based devices.
+- Kernel 4.9 will not support SukiSU-Ultra.
 
 **Chinese**:  
 - 一加 8 OxygenOS/ColorOS 13.1 经测试8、8T、8 Pro、9R 都可用
 - 小米 Mix2s EvolutionX 10 已移植Cgroup V2 (UID 和 Freezer)、Binder (5.15-android13) 以及 LZ4（更新至1.10.0、LZ4K、LZ4K_OPLUS、LZ4KD）
 - 三星 Note 10+ 适配处理器为猎户座9850，为欧盟地区版本，高通版本请勿刷入
+- 4.9 内核 将不再支持 SukiSU-Ultra
