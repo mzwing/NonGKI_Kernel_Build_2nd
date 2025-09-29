@@ -106,7 +106,11 @@ runs:
                 KERNELSU_NAME="KernelSU"
                 KERNELSU_ORIGIN_BRANCH="main"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
-                    KERNELSU_BRANCH="susfs-main"
+                    if [[ "${{ env.SUSFS_UPDATE }}" == "true" ]]; then
+                        KERNELSU_BRANCH="susfs-main"
+                    else
+                        KERNELSU_BRANCH="susfs-legacy"
+                    fi
                 else
                     KERNELSU_BRANCH="main"
                 fi
