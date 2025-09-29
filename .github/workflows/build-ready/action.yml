@@ -102,7 +102,7 @@ runs:
                     KERNELSU_BRANCH="master"
                 fi
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
-                KERNELSU_AUTHOR="backslashxx"
+                KERNELSU_AUTHOR="rsuntk"
                 KERNELSU_NAME="KernelSU"
                 KERNELSU_ORIGIN_BRANCH="main"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
@@ -115,8 +115,8 @@ runs:
                     KERNELSU_BRANCH="main"
                 fi
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
-                KERNELSU_AUTHOR="backslashxx"
-                KERNELSU_NAME="KernelSU"
+                KERNELSU_AUTHOR="SukiSU-Ultra"
+                KERNELSU_NAME="SukiSU-Ultra"
                 KERNELSU_ORIGIN_BRANCH="main"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     KERNELSU_BRANCH="susfs-main"
