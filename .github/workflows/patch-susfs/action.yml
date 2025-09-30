@@ -100,23 +100,42 @@ runs:
 
           # Upgrade 1.5.7
           cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
-
           patch -p1 < susfs_upgrade_to_157.patch || true
+          echo "================="
+          echo "=Upgraded  1.5.7="
+          echo "================="
 
           # Upgrade 1.5.8
           cp /tmp/Patches/Patch/susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch ./
           patch -p1 < susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch || true
-          echo "Detected no-kprobe hook, use no-kprobe patch."
+          echo "================="
+          echo "=Upgraded  1.5.8="
+          echo "================="
 
           # Upgrade 1.5.9
           cp /tmp/Patches/Patch/susfs_upgrade_to_159.patch ./
-
           patch -p1 < susfs_upgrade_to_159.patch || true
+          echo "================="
+          echo "=Upgraded  1.5.9="
+          echo "================="
 
           # Upgrade 1.5.10
           cp /tmp/Patches/Patch/susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch ./
           patch -p1 < susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch || true
-          echo "Detected no-kprobe hook, use no-kprobe patch to update 1.5.10."
+          echo "================="
+          echo "=Upgraded 1.5.10="
+          echo "================="
+
+          # Upgrade 1.5.11
+          if grep -q "susfs_reorder_mnt_id" "drivers/kernelsu/core_hook.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1511_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_1511_${{ env.KERNEL_VERSION }}.patch || true
+            echo "================="
+            echo "=Upgraded 1.5.11="
+            echo "================="
+          else
+            echo "Your kernelsu fork cannot supported SuSFS 1.5.11. Skipped."
+          fi
 
       - name: Updated SUSFS Patch Fixed
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
