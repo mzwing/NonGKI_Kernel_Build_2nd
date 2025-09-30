@@ -32,8 +32,8 @@ env:
   KERNELSU_SOURCE : "https://raw.githubusercontent.com/JackA1ltman/KernelSU/refs/heads/susfs-testing/kernel/setup.sh"
   KERNELSU_BRANCH : "susfs-testing"
 
-  KERNELSU_AUTO_GET : "false"
-  KERNELSU_AUTO_FORK : "next" # magic, rsuntk , next and sukisu
+  KERNELSU_AUTO_GET : "true"
+  KERNELSU_AUTO_FORK : "rsuntk" # magic, rsuntk , next and sukisu
 
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
