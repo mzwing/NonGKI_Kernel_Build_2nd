@@ -184,7 +184,7 @@ index 6634dc4..1d1bbe5 100644
  		if (!IS_ERR(fake_pathname)) {
  			restore_nameidata();
 diff --git a/fs/namespace.c b/fs/namespace.c
-index fa8599d..0778726 100644
+index fa8599d..2fc2def 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -1102,7 +1102,7 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
@@ -324,13 +324,10 @@ index fa8599d..0778726 100644
  
  	namespace_unlock();
  
-@@ -3888,26 +3876,6 @@ const struct proc_ns_operations mntns_operations = {
- 	.owner		= mntns_owner,
- };
- 
--#ifdef CONFIG_KSU_SUSFS_TRY_UMOUNT
--extern void susfs_try_umount_all(uid_t uid);
--void susfs_run_try_umount_for_current_mnt_ns(void) {
+@@ -3891,21 +3879,21 @@ const struct proc_ns_operations mntns_operations = {
+ #ifdef CONFIG_KSU_SUSFS_TRY_UMOUNT
+ extern void susfs_try_umount_all(uid_t uid);
+ void susfs_run_try_umount_for_current_mnt_ns(void) {
 -	struct mount *mnt;
 -	struct mnt_namespace *mnt_ns;
 -
@@ -346,12 +343,25 @@ index fa8599d..0778726 100644
 -	// Unlock the namespace
 -	namespace_unlock();
 -	susfs_try_umount_all(current_uid().val);
--}
--#endif
++       struct mount *mnt;
++       struct mnt_namespace *mnt_ns;
++
++       mnt_ns = current->nsproxy->mnt_ns;
++       // Lock the namespace
++       namespace_lock();
++       list_for_each_entry(mnt, &mnt_ns->list, mnt_list) {
++               // Change the sus mount to be private
++               if (mnt->mnt_id >= DEFAULT_SUS_MNT_ID) {
++                       change_mnt_propagation(mnt, MS_PRIVATE);
++               }
++       }
++       // Unlock the namespace
++       namespace_unlock();
++       susfs_try_umount_all(current_uid().val);
+ }
+ #endif
  #ifdef CONFIG_KSU_SUSFS
- bool susfs_is_mnt_devname_ksu(struct path *path) {
- 	struct mount *mnt;
-@@ -3920,4 +3888,4 @@ bool susfs_is_mnt_devname_ksu(struct path *path) {
+@@ -3920,4 +3908,4 @@ bool susfs_is_mnt_devname_ksu(struct path *path) {
  	}
  	return false;
  }
@@ -461,10 +471,10 @@ index 64a1949..9375c3d 100644
  #endif
  
 diff --git a/fs/stat.c b/fs/stat.c
-index 459095e..48dc087 100644
+index d74d109..1d39c30 100644
 --- a/fs/stat.c
 +++ b/fs/stat.c
-@@ -28,8 +28,8 @@ extern void susfs_sus_ino_for_generic_fillattr(unsigned long ino, struct kstat *
+@@ -37,8 +37,8 @@ extern void susfs_sus_ino_for_generic_fillattr(unsigned long ino, struct kstat *
  void generic_fillattr(struct inode *inode, struct kstat *stat)
  {
  #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
@@ -475,24 +485,6 @@ index 459095e..48dc087 100644
  		susfs_sus_ino_for_generic_fillattr(inode->i_ino, stat);
  		stat->mode = inode->i_mode;
  		stat->rdev = inode->i_rdev;
-@@ -159,7 +159,7 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
- {
- 	static int warncount = 5;
- 	struct __old_kernel_stat tmp;
--	
-+
- 	if (warncount > 0) {
- 		warncount--;
- 		printk(KERN_WARNING "VFS: Warning: %s using old stat() call. Recompile your binary.\n",
-@@ -184,7 +184,7 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
- #if BITS_PER_LONG == 32
- 	if (stat->size > MAX_NON_LFS)
- 		return -EOVERFLOW;
--#endif	
-+#endif
- 	tmp.st_size = stat->size;
- 	tmp.st_atime = stat->atime.tv_sec;
- 	tmp.st_mtime = stat->mtime.tv_sec;
 diff --git a/fs/statfs.c b/fs/statfs.c
 index 4a9041d..dc43317 100644
 --- a/fs/statfs.c
@@ -516,7 +508,7 @@ index 4a9041d..dc43317 100644
  	}
  #endif
 diff --git a/fs/susfs.c b/fs/susfs.c
-index 5e32604..12af7be 100644
+index 9b92d50..60c2b53 100644
 --- a/fs/susfs.c
 +++ b/fs/susfs.c
 @@ -21,25 +21,35 @@ static spinlock_t susfs_spin_lock;
@@ -856,9 +848,9 @@ index 5e32604..12af7be 100644
  	} else {
  		SUSFS_LOGI("target_ino: '%lu', target_pathname: '%s' redirected_pathname: '%s', is successfully added to OPEN_REDIRECT_HLIST\n",
  				new_entry->target_ino, new_entry->target_pathname, new_entry->redirected_pathname);
-@@ -1034,6 +1145,14 @@ struct filename* susfs_get_redirected_path(unsigned long ino) {
+@@ -1134,6 +1245,14 @@ out_kfree_kbuf:
  }
- #endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+ 
  
 +/* susfs avc log spoofing */
 +void susfs_set_avc_log_spoofing(bool enabled) {
@@ -871,7 +863,7 @@ index 5e32604..12af7be 100644
  /* susfs_init */
  void susfs_init(void) {
  	spin_lock_init(&susfs_spin_lock);
-@@ -1046,4 +1165,3 @@ void susfs_init(void) {
+@@ -1146,4 +1265,3 @@ void susfs_init(void) {
  
  /* No module exit is needed becuase it should never be a loadable kernel module */
  //void __init susfs_exit(void)
@@ -898,18 +890,21 @@ index a22c4e4..c2e8bb9 100644
  /* susfs_init */
  void susfs_init(void);
 diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
-index 3fcd878..9af0562 100644
+index 3fcd878..29a01e7 100644
 --- a/include/linux/susfs_def.h
 +++ b/include/linux/susfs_def.h
-@@ -10,6 +10,7 @@
+@@ -10,8 +10,10 @@
  #define CMD_SUSFS_ADD_SUS_PATH 0x55550
  #define CMD_SUSFS_SET_ANDROID_DATA_ROOT_PATH 0x55551
  #define CMD_SUSFS_SET_SDCARD_ROOT_PATH 0x55552
 +#define CMD_SUSFS_ADD_SUS_PATH_LOOP 0x55553
  #define CMD_SUSFS_ADD_SUS_MOUNT 0x55560
  #define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561
++#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562
  #define CMD_SUSFS_ADD_SUS_KSTAT 0x55570
-@@ -20,10 +21,10 @@
+ #define CMD_SUSFS_UPDATE_SUS_KSTAT 0x55571
+ #define CMD_SUSFS_ADD_SUS_KSTAT_STATICALLY 0x55572
+@@ -20,10 +22,10 @@
  #define CMD_SUSFS_ENABLE_LOG 0x555a0
  #define CMD_SUSFS_SET_CMDLINE_OR_BOOTCONFIG 0x555b0
  #define CMD_SUSFS_ADD_OPEN_REDIRECT 0x555c0
@@ -921,7 +916,7 @@ index 3fcd878..9af0562 100644
  
  #define SUSFS_MAX_LEN_PATHNAME 256 // 256 should address many paths already unless you are doing some strange experimental stuff, then set your own desired length
  #define SUSFS_FAKE_CMDLINE_OR_BOOTCONFIG_SIZE 4096
-@@ -36,20 +37,27 @@
+@@ -36,20 +38,27 @@
  #define DEFAULT_SUS_MNT_GROUP_ID 1000 /* used by mount->mnt_group_id */
  
  /*
@@ -957,7 +952,7 @@ index 3fcd878..9af0562 100644
  #define BIT_ANDROID_DATA_ROOT_DIR BIT(28)
  #define BIT_ANDROID_SDCARD_ROOT_DIR BIT(29)
  
-@@ -64,4 +72,20 @@
+@@ -64,4 +73,20 @@
  #define DATA_ADB_NO_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT "/data/adb/susfs_no_auto_add_sus_ksu_default_mount"
  #define DATA_ADB_NO_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT "/data/adb/susfs_no_auto_add_try_umount_for_bind_mount"
  
