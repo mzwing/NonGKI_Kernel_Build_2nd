@@ -202,7 +202,7 @@ runs:
                     else
                         echo "Your device cannot supported SukiSU-Ultra!"
                         echo "You need merge patch about task_alloc."
-                    false
+                        false
                     fi
                 fi
             fi
