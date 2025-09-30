@@ -1,5 +1,5 @@
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 1077a6f..747aa4a 100644
+index 1077a6f..76326fe 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -40,6 +40,7 @@
@@ -10,6 +10,85 @@ index 1077a6f..747aa4a 100644
  
  static DEFINE_IDA(susfs_mnt_id_ida);
  static DEFINE_IDA(susfs_mnt_group_ida);
+@@ -4420,6 +4421,26 @@ void susfs_run_try_umount_for_current_mnt_ns(void) {
+        susfs_try_umount_all(current_uid().val);
+ }
+ #endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++/* Reorder the mnt_id after all sus mounts are umounted during ksu_handle_setuid() */
++void susfs_reorder_mnt_id(void) {
++	struct mnt_namespace *mnt_ns = current->nsproxy->mnt_ns;
++	struct mount *mnt;
++	int first_mnt_id = 0;
++
++	if (!mnt_ns) {
++		return;
++	}
++
++	get_mnt_ns(mnt_ns);
++	first_mnt_id = list_first_entry(&mnt_ns->list, struct mount, mnt_list)->mnt_id;
++	list_for_each_entry(mnt, &mnt_ns->list, mnt_list) {
++		mnt->mnt.susfs_mnt_id_backup = mnt->mnt_id;
++		mnt->mnt_id = first_mnt_id++;
++	}
++	put_mnt_ns(mnt_ns);
++}
++#endif
+ #ifdef CONFIG_KSU_SUSFS
+ bool susfs_is_mnt_devname_ksu(struct path *path) {
+ 	struct mount *mnt;
+diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
+index 6dd4ce0..d7e0608 100644
+--- a/fs/notify/fdinfo.c
++++ b/fs/notify/fdinfo.c
+@@ -103,7 +103,7 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
+ 	inode = igrab(fsnotify_conn_inode(mark->connector));
+ 	if (inode) {
+ #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+-		if (likely(susfs_is_current_non_root_user_app_proc()) &&
++		if (likely(susfs_is_current_proc_umounted()) &&
+ 				unlikely(inode->i_mapping->flags & BIT_SUS_KSTAT)) {
+ 			struct path path;
+ 			char *pathname = kmalloc(PAGE_SIZE, GFP_KERNEL);
+diff --git a/fs/proc/fd.c b/fs/proc/fd.c
+index 4a74eb2..f9fe45f 100644
+--- a/fs/proc/fd.c
++++ b/fs/proc/fd.c
+@@ -60,7 +60,7 @@ static int seq_show(struct seq_file *m, void *v)
+ 		return ret;
+ #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+ 	mnt = real_mount(file->f_path.mnt);
+-	if (likely(susfs_is_current_non_root_user_app_proc()) &&
++	if (likely(susfs_is_current_proc_umounted()) &&
+ 			mnt->mnt_id >= DEFAULT_SUS_MNT_ID) {
+ 		struct path path;
+ 		char *pathname = kmalloc(PAGE_SIZE, GFP_KERNEL);
+diff --git a/fs/stat.c b/fs/stat.c
+index 4956295..2138195 100644
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -40,7 +40,7 @@ extern void susfs_sus_ino_for_generic_fillattr(unsigned long ino, struct kstat *
+ void generic_fillattr(struct inode *inode, struct kstat *stat)
+ {
+ #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
+-	if (likely(susfs_is_current_non_root_user_app_proc()) &&
++	if (likely(susfs_is_current_proc_umounted()) &&
+ 			unlikely(inode->i_mapping->flags & BIT_SUS_KSTAT)) {
+ 		susfs_sus_ino_for_generic_fillattr(inode->i_ino, stat);
+ 		stat->mode = inode->i_mode;
+diff --git a/fs/statfs.c b/fs/statfs.c
+index 9c1fa9c..248b43e 100644
+--- a/fs/statfs.c
++++ b/fs/statfs.c
+@@ -92,7 +92,7 @@ int vfs_statfs(const struct path *path, struct kstatfs *buf)
+ 	struct mount *mnt;
+ 
+ 	mnt = real_mount(path->mnt);
+-	if (likely(susfs_is_current_non_root_user_app_proc())) {
++	if (likely(susfs_is_current_proc_umounted())) {
+ 		for (; mnt->mnt_id >= DEFAULT_SUS_MNT_ID; mnt = mnt->mnt_parent) {}
+ 	}
+ 	error = statfs_by_dentry(mnt->mnt.mnt_root, buf);
 diff --git a/fs/susfs.c b/fs/susfs.c
 index f3b34d2..7e8b295 100644
 --- a/fs/susfs.c
