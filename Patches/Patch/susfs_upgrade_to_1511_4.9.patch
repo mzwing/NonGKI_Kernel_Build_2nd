@@ -1,5 +1,5 @@
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 2fc2def..274a340 100644
+index 2fc2def..dd9d142 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -34,6 +34,7 @@
@@ -10,6 +10,33 @@ index 2fc2def..274a340 100644
  
  static DEFINE_IDA(susfs_mnt_id_ida);
  static DEFINE_IDA(susfs_mnt_group_ida);
+@@ -3896,6 +3897,26 @@ void susfs_run_try_umount_for_current_mnt_ns(void) {
+        susfs_try_umount_all(current_uid().val);
+ }
+ #endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++/* Reorder the mnt_id after all sus mounts are umounted during ksu_handle_setuid() */
++void susfs_reorder_mnt_id(void) {
++	struct mnt_namespace *mnt_ns = current->nsproxy->mnt_ns;
++	struct mount *mnt;
++	int first_mnt_id = 0;
++
++	if (!mnt_ns) {
++		return;
++	}
++
++	get_mnt_ns(mnt_ns);
++	first_mnt_id = list_first_entry(&mnt_ns->list, struct mount, mnt_list)->mnt_id;
++	list_for_each_entry(mnt, &mnt_ns->list, mnt_list) {
++		mnt->mnt.susfs_mnt_id_backup = mnt->mnt_id;
++		mnt->mnt_id = first_mnt_id++;
++	}
++	put_mnt_ns(mnt_ns);
++}
++#endif
+ #ifdef CONFIG_KSU_SUSFS
+ bool susfs_is_mnt_devname_ksu(struct path *path) {
+ 	struct mount *mnt;
 diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
 index ddf2bdb..19e9c87 100644
 --- a/fs/notify/fdinfo.c
