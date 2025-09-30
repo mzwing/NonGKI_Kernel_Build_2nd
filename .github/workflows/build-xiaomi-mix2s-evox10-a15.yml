@@ -29,7 +29,7 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  KERNELSU_SOURCE : "https://raw.githubusercontent.com/JackA1ltman/KernelSU-Next/refs/heads/susfs-testing/kernel/setup.sh"
+  KERNELSU_SOURCE : "https://raw.githubusercontent.com/JackA1ltman/KernelSU/refs/heads/susfs-testing/kernel/setup.sh"
   KERNELSU_BRANCH : "susfs-testing"
 
   KERNELSU_AUTO_GET : "false"
