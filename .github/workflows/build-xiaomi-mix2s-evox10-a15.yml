@@ -29,10 +29,10 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  KERNELSU_SOURCE : "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/refs/heads/susfs-main/kernel/setup.sh"
-  KERNELSU_BRANCH : "susfs-main"
+  KERNELSU_SOURCE : "https://raw.githubusercontent.com/JackA1ltman/KernelSU-Next/refs/heads/susfs-testing/kernel/setup.sh"
+  KERNELSU_BRANCH : "susfs-testing"
 
-  KERNELSU_AUTO_GET : "true"
+  KERNELSU_AUTO_GET : "false"
   KERNELSU_AUTO_FORK : "next" # magic, rsuntk , next and sukisu
 
   SUSFS_ENABLE : true
