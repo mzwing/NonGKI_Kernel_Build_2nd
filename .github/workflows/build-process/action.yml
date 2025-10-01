@@ -92,7 +92,7 @@ runs:
 
           # Core
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
-            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ GCC_32 }}" ]; then
+            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
                 BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
@@ -103,7 +103,7 @@ runs:
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
-            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ GCC_32 }}" ]; then
+            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
                 BUILD_PROCESS "${{ env.GCC_64 }} ${{ env.GCC_32 }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 BUILD_PROCESS "${{ env.GCC_64 }} ${{ env.GCC_32 }}"
@@ -124,7 +124,7 @@ runs:
           fi
 
       - name: Generate DTBO
-        if: env.HAVE_NO_DTBO == "true" && env.HAVE_NO_DTBO_TOOL == "true"
+        if: env.HAVE_NO_DTBO == 'true' && env.HAVE_NO_DTBO_TOOL == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
