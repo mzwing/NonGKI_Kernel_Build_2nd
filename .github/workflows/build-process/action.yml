@@ -88,13 +88,16 @@ runs:
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           fi
 
-          make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+          make O=out ARCH="${{ env.KERNEL_ARCH }}" "$BUILD_ARGUMENT" "$BUILD_PARAM" ${{ env.DEFCONFIG_NAME }}
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+            echo "================="
+            echo "=Merge Config(s)="
+            echo "================="
             IFS=',' read -ra MERGE_CONFIG_FILES <<< "${{ env.MERGE_CONFIG_FILES }}"
             for FILES in "${MERGE_CONFIG_FILES[@]}"; do
                 ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
             done
-            make O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
+            make O=out ARCH="${{ env.KERNEL_ARCH }}" "$BUILD_ARGUMENT" "$BUILD_PARAM" olddefconfig
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
