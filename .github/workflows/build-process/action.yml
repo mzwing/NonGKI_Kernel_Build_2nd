@@ -91,27 +91,27 @@ runs:
             make "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
           fi
 
-          make -j$(nproc --all) "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          if [ -n "${{ env.CLANG_SOURCE }}" ]; then
+            make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          else
+            make -j$(nproc --all) "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          fi
           }
 
           # Core
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
-                export CC="ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
-                export CC="ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             elif [ -n "${{ env.GCC_64 }}" ]; then
-                export CC="ccache clang"
                 export "${{ env.GCC_64 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             else
-                export CC="ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
