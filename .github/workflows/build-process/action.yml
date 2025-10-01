@@ -93,13 +93,13 @@ runs:
           # Core
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
-                BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
+                BUILD_PROCESS "--eval=CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
-                BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
+                BUILD_PROCESS "--eval=CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}"
             elif [ -n "${{ env.GCC_64 }}" ]; then
-                BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }}"
+                BUILD_PROCESS "--eval=CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }}"
             else
-                BUILD_PROCESS "CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}"
+                BUILD_PROCESS "--eval=CC='ccache clang' ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}"
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
