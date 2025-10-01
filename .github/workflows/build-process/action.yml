@@ -74,27 +74,29 @@ runs:
           BUILD_PROCESS(){
           if [ -n "$1" ]; then
             local BUILD_ARGUMENT="$1"
+            local BUILD_PARAM="$2"
           else
             BUILD_ARGUMENT=""
+            BUILD_PARAM=""
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           fi
 
-          make "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+          make "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
             IFS=',' read -ra MERGE_CONFIG_FILES <<< "${{ env.MERGE_CONFIG_FILES }}"
             for FILES in "${MERGE_CONFIG_FILES[@]}"; do
                 ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
             done
-            make "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
+            make "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
-            make -j$(nproc --all) CC="ccache clang" CLANG_TRIPLE=aarch64-linux-gnu- "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           else
-            make -j$(nproc --all) "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            make -j$(nproc --all) "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           fi
           }
 
@@ -103,18 +105,18 @@ runs:
             if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             elif [ -n "${{ env.GCC_64 }}" ]; then
                 export "${{ env.GCC_64 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             else
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
