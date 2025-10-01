@@ -72,7 +72,7 @@ runs:
 
           # Function
           BUILD_PROCESS(){
-          local BUILD_ARGUMENT = "$1"
+          local BUILD_ARGUMENT="$1"
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
