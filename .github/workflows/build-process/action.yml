@@ -87,7 +87,7 @@ runs:
             echo "========================"
             echo "=Read Defconfig (Clang)="
             echo "========================"
-            make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
+            make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
           else
             echo "================"
             echo "=Read Defconfig="
@@ -107,7 +107,7 @@ runs:
                 echo "==============================="
                 echo "=Execuate olddefconfig (Clang)="
                 echo "==============================="
-                make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
+                make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
             else
                 echo "======================="
                 echo "=Execuate olddefconfig="
