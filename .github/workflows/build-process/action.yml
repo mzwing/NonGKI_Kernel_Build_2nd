@@ -73,14 +73,17 @@ runs:
           # Function
           BUILD_PROCESS(){
           if [ -n "$1" ]; then
+            echo "Select: $1"
             local BUILD_CLANG="$1"
+          else
+            BUILD_CLANG=""
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           fi
 
-          if [[ "BUILD_CLANG" == "true" ]]; then
+          if [[ "$BUILD_CLANG" == "true" ]]; then
             echo "========================"
             echo "=Read Defconfig (Clang)="
             echo "========================"
@@ -100,7 +103,7 @@ runs:
             for FILES in "${MERGE_CONFIG_FILES[@]}"; do
                 ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
             done
-            if [[ "BUILD_CLANG" == "true" ]]; then
+            if [[ "$BUILD_CLANG" == "true" ]]; then
                 echo "==============================="
                 echo "=Execuate olddefconfig (Clang)="
                 echo "==============================="
@@ -113,7 +116,7 @@ runs:
             fi
           fi
 
-          if [[ "BUILD_CLANG" == "true" ]]; then
+          if [[ "$BUILD_CLANG" == "true" ]]; then
             echo "======================"
             echo "=Execuate Clang Build="
             echo "======================"
