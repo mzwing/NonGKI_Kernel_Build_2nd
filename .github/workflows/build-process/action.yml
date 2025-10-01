@@ -118,8 +118,6 @@ runs:
                 export "${{ env.GCC_64 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             else
-                export "${{ env.GCC_64 }}"
-                export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
             fi
 
