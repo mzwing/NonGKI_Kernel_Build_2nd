@@ -95,7 +95,6 @@ runs:
                 KERNELSU_AUTHOR="backslashxx"
                 KERNELSU_NAME="KernelSU"
                 KERNELSU_ORIGIN_BRANCH="master"
-                KERNELSU_FOLDER="KernelSU"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     echo "Magic doesn't support SuSFS! "
                     false
@@ -106,7 +105,6 @@ runs:
                 KERNELSU_AUTHOR="rsuntk"
                 KERNELSU_NAME="KernelSU"
                 KERNELSU_ORIGIN_BRANCH="main"
-                KERNELSU_FOLDER="KernelSU"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     if [[ "${{ env.SUSFS_UPDATE }}" == "true" ]]; then
                         KERNELSU_BRANCH="susfs-main"
@@ -120,7 +118,6 @@ runs:
                 KERNELSU_AUTHOR="SukiSU-Ultra"
                 KERNELSU_NAME="SukiSU-Ultra"
                 KERNELSU_ORIGIN_BRANCH="main"
-                KERNELSU_FOLDER="KernelSU"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     KERNELSU_BRANCH="susfs-main"
                 else
@@ -130,7 +127,6 @@ runs:
                 KERNELSU_AUTHOR="KernelSU-Next"
                 KERNELSU_NAME="KernelSU-Next"
                 KERNELSU_ORIGIN_BRANCH="next"
-                KERNELSU_FOLDER="KernelSU-Next"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     KERNELSU_BRANCH="next-susfs-a13-5.15-dev"
                 else
@@ -139,6 +135,14 @@ runs:
             else
                 echo "Please input vaild fork name!"
                 false
+            fi
+
+            if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "next" ]]; then
+                KERNELSU_FOLDER="KernelSU-Next"
+                echo "KERNELSU_NAME=$KERNELSU_FOLDER" >> $GITHUB_ENV
+            else
+                KERNELSU_FOLDER="KernelSU"
+                echo "KERNELSU_NAME=$KERNELSU_FOLDER" >> $GITHUB_ENV
             fi
 
             if [[ "${{ env.KERNELSU_METHOD }}" == "shell" ]]; then
@@ -156,10 +160,12 @@ runs:
           }
 
           KERNELSU_MANUAL(){
-            if [[ "${{ env.KERNELSU_SOURCE }}" == *Next* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "next" ]]; then
+            if [[ "${{ env.KERNELSU_SOURCE }}" == *Next* ]]; then
                 KERNELSU_FOLDER="KernelSU-Next"
+                echo "KERNELSU_NAME=$KERNELSU_FOLDER" >> $GITHUB_ENV
             else
                 KERNELSU_FOLDER="KernelSU"
+                echo "KERNELSU_NAME=$KERNELSU_FOLDER" >> $GITHUB_ENV
             fi
 
             if [[ "${{ env.KERNELSU_METHOD }}" == "shell" ]]; then
