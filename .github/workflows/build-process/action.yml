@@ -92,7 +92,7 @@ runs:
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
-            make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            make -j$(nproc --all) CC="ccache clang" CLANG_TRIPLE=aarch64-linux-gnu- "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           else
             make -j$(nproc --all) "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           fi
