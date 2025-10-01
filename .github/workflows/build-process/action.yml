@@ -99,8 +99,14 @@ runs:
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            echo "======================"
+            echo "=Execuate Clang Build="
+            echo "======================"
           else
             make -j$(nproc --all) "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            echo "===================="
+            echo "=Execuate GCC Build="
+            echo "===================="
           fi
           }
 
@@ -110,15 +116,27 @@ runs:
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            echo "=================================="
+            echo "=Detected Clang and GCC 64 and 32="
+            echo "=================================="
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            echo "============================"
+            echo "=Detected Clang and GNU GCC="
+            echo "============================"
             elif [ -n "${{ env.GCC_64 }}" ]; then
                 export "${{ env.GCC_64 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            echo "==========================="
+            echo "=Detected Clang and GCC 64="
+            echo "==========================="
             else
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            echo "====================="
+            echo "=Detected Only Clang="
+            echo "====================="
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
@@ -126,22 +144,37 @@ runs:
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS
+            echo "=================================="
+            echo "=Detected ARM64 GCC 64 and GCC 32="
+            echo "=================================="
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS
+            echo "========================"
+            echo "=Detected ARM64 GNU GCC="
+            echo "========================"
             elif [ -n "${{ env.GCC_64 }}" ]; then
                 export "${{ env.GCC_64 }}"
                 BUILD_PROCESS
+            echo "============================"
+            echo "=Detected ARM64 Only GCC 64="
+            echo "============================"
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm" ]; then
             if [ "${{ env.GNU_GCC }}" == "true" ]; then
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS
+            echo "======================"
+            echo "=Detected ARM GNU GCC="
+            echo "======================"
             elif [ -n "${{ env.GCC_32 }}" ]; then
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS
+            echo "====================="
+            echo "=Detected ARM GCC 32="
+            echo "====================="
             fi
 
           else
