@@ -78,16 +78,16 @@ runs:
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           fi
 
-          make "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+          make $BUILD_ARGUMENT O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
             IFS=',' read -ra MERGE_CONFIG_FILES <<< "${{ env.MERGE_CONFIG_FILES }}"
             for FILES in "${MERGE_CONFIG_FILES[@]}"; do
                 ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
             done
-            make "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
+            make $BUILD_ARGUMENT O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
           fi
 
-          make -j$(nproc --all) "$BUILD_ARGUMENT" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          make -j$(nproc --all) $BUILD_ARGUMENT O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           }
 
           # Core
