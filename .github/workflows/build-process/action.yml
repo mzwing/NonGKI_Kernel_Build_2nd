@@ -72,8 +72,12 @@ runs:
 
           # Function
           BUILD_PROCESS(){
-          if [ -n "$1" ]; then
+          if [ -n "$1" ] && [ -n "$2" ]; then
             local BUILD_ARGUMENT="$1"
+            local BUILD_PARAM="$2"
+          elif [ -n "$1" ]; then
+            local BUILD_ARGUMENT="$1"
+          elif [ -n "$2" ]; then
             local BUILD_PARAM="$2"
           else
             BUILD_ARGUMENT=""
