@@ -97,21 +97,21 @@ runs:
           # Core
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
-                export "CC='ccache clang"
+                export "CC=ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
-                export "CC='ccache clang"
+                export "CC=ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             elif [ -n "${{ env.GCC_64 }}" ]; then
-                export "CC='ccache clang"
+                export "CC=ccache clang"
                 export "${{ env.GCC_64 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
             else
-                export "CC='ccache clang"
+                export "CC=ccache clang"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
                 BUILD_PROCESS "${{ env.EXTRA_CMDS }} ${{ env.CUSTOM_CMDS }}"
