@@ -120,6 +120,10 @@ jobs:
 
           # sed -i 's|\$(obj)/config_data.gz: [^ ]* FORCE|\$(obj)/config_data.gz: $(KCONFIG_CONFIG) FORCE|' kernel/Makefile
 
+          # kernel_compat fixed
+          cp NonGKI_Kernel_Patches/kona_oos/compat_fixed.patch ./
+          patch -p1 < compat_fixed.patch
+
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel
 
