@@ -68,76 +68,103 @@ runs:
       - name: Build Kernel
         shell: bash
         run: |
-          if [[ "${{ env.BUILD_OTHER_CONFIG }}" == "true" ]]; then
-            IFS=',' read -ra MERGE_CONFIG_FILES <<< "${{ env.MERGE_CONFIG_FILES }}"
-          fi
-
-          export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
-          if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
-            make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
-            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                done
-                make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
-            fi
-            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} 2>&1|tee error.log
-          elif [ -z "${{ env.GCC_32 }}" ]; then
-            make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.DEFCONFIG_NAME }}
-            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                done
-                make O=out ARCH=arm64 ${{ env.GCC_64 }} olddefconfig
-            fi
-            make -j$(nproc --all) O=out ARCH=arm64 ${{ env.GCC_64 }} 2>&1|tee error.log
-          elif [ -z "${{ env.GCC_64 }}" ]; then
-            make O=out ARCH=arm ${{ env.GCC_64 }} ${{ env.DEFCONFIG_NAME }}
-            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm/configs/$FILES
-                done
-                make O=out ARCH=arm ${{ env.GCC_32 }} olddefconfig
-            fi
-            make -j$(nproc --all) O=out ARCH=arm ${{ env.GCC_32 }} 2>&1|tee error.log
-          elif [ -z "${{ env.CLANG_SOURCE }}" ]; then
-            make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
-            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                done
-                make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
-            fi
-            make -j$(nproc --all) O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
+
+          # Function
+          BUILD_PROCESS(){
+          if [ -n "$1" ] && [ -n "$2" ]; then
+            local BUILD_ARGUMENT="$1"
+            local BUILD_PARAM="$2"
+          elif [ -n "$1" ]; then
+            local BUILD_ARGUMENT="$1"
+          elif [ -n "$2" ]; then
+            local BUILD_PARAM="$2"
           else
-            make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
-            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                done
-                make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
-            fi
-            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
+            BUILD_ARGUMENT=""
+            BUILD_PARAM=""
           fi
 
-          if grep -q "Error 2" "$GITHUB_WORKSPACE/device_kernel/error.log"; then
+          if [ -n "${{ env.CLANG_SOURCE }}" ]; then
+            export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
+          fi
+
+          make "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+          if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+            IFS=',' read -ra MERGE_CONFIG_FILES <<< "${{ env.MERGE_CONFIG_FILES }}"
+            for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
+            done
+            make "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
+          fi
+
+          if [ -n "${{ env.CLANG_SOURCE }}" ]; then
+            make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          else
+            make -j$(nproc --all) "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+          fi
+          }
+
+          # Core
+          if [ -n "${{ env.CLANG_SOURCE }}" ]; then
+            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
+                export "${{ env.GCC_64 }}"
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            elif [ "${{ env.GNU_GCC }}" == "true" ]; then
+                export "${{ env.GCC_64 }}"
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            elif [ -n "${{ env.GCC_64 }}" ]; then
+                export "${{ env.GCC_64 }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            else
+                export "${{ env.GCC_64 }}"
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+            fi
+
+          elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
+            if [ -n "${{ env.GCC_64 }}" ] && [ -n "${{ env.GCC_32 }}" ]; then
+                export "${{ env.GCC_64 }}"
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS
+            elif [ "${{ env.GNU_GCC }}" == "true" ]; then
+                export "${{ env.GCC_64 }}"
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS
+            elif [ -n "${{ env.GCC_64 }}" ]; then
+                export "${{ env.GCC_64 }}"
+                BUILD_PROCESS
+            fi
+
+          elif [ "${{ env.KERNEL_ARCH }}" == "arm" ]; then
+            if [ "${{ env.GNU_GCC }}" == "true" ]; then
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS
+            elif [ -n "${{ env.GCC_32 }}" ]; then
+                export "${{ env.GCC_32 }}"
+                BUILD_PROCESS
+            fi
+
+          else
+            echo "invaild kernel arch, stop."
             false
           fi
 
-          ## Generate DTBO
-          if [ "${{ env.HAVE_NO_DTBO }}" == "true" ] && [ "${{ env.HAVE_NO_DTBO_TOOL }}" == "true" ]; then
-            cd $GITHUB_WORKSPACE/device_kernel
-            mkdir dtbo_tool
-            cd dtbo_tool
-            ${{ env.CURLX }} https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz mkdtboimg.tar.gz
-            tar zxvf mkdtboimg.tar.gz
-            cd ../
-            if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then
-                python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtbo
-            else
-                python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
-            fi
+      - name: Generate DTBO
+        if: env.HAVE_NO_DTBO == 'true' && env.HAVE_NO_DTBO_TOOL == 'true'
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel
+          mkdir dtbo_tool
+          cd dtbo_tool
+          ${{ env.CURLX }} https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz mkdtboimg.tar.gz
+          tar zxvf mkdtboimg.tar.gz
+          cd ../
+          if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then
+            python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtbo
+          else
+            python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
           fi
 
       - name: Analyze compile error
