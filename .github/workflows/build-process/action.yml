@@ -72,23 +72,26 @@ runs:
 
           # Function
           BUILD_PROCESS(){
-          if [ -n "$1" ] && [ -n "$2" ]; then
-            local BUILD_ARGUMENT="$1"
-            local BUILD_PARAM="$2"
-          elif [ -n "$1" ]; then
-            local BUILD_ARGUMENT="$1"
-          elif [ -n "$2" ]; then
-            local BUILD_PARAM="$2"
-          else
-            BUILD_ARGUMENT=""
-            BUILD_PARAM=""
+          if [ -n "$1" ]; then
+            local BUILD_CLANG="$1"
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
             export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           fi
 
-          make O=out ARCH="${{ env.KERNEL_ARCH }}" $BUILD_ARGUMENT $BUILD_PARAM ${{ env.DEFCONFIG_NAME }}
+          if [[ "BUILD_CLANG" == "true" ]]; then
+            echo "========================"
+            echo "=Read Defconfig (Clang)="
+            echo "========================"
+            make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
+          else
+            echo "================"
+            echo "=Read Defconfig="
+            echo "================"
+            make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+          fi
+
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
             echo "================="
             echo "=Merge Config(s)="
@@ -97,19 +100,29 @@ runs:
             for FILES in "${MERGE_CONFIG_FILES[@]}"; do
                 ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/$FILES
             done
-            make O=out ARCH="${{ env.KERNEL_ARCH }}" $BUILD_ARGUMENT $BUILD_PARAM olddefconfig
+            if [[ "BUILD_CLANG" == "true" ]]; then
+                echo "==============================="
+                echo "=Execuate olddefconfig (Clang)="
+                echo "==============================="
+                make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
+            else
+                echo "======================="
+                echo "=Execuate olddefconfig="
+                echo "======================="
+                make O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
+            fi
           fi
 
-          if [ -n "${{ env.CLANG_SOURCE }}" ]; then
+          if [[ "BUILD_CLANG" == "true" ]]; then
             echo "======================"
             echo "=Execuate Clang Build="
             echo "======================"
-            make -j$(nproc --all) CC="ccache clang" "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            make -j$(nproc --all) CC="ccache clang" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           else
             echo "===================="
             echo "=Execuate GCC Build="
             echo "===================="
-            make -j$(nproc --all) "$BUILD_ARGUMENT" "$BUILD_PARAM" O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
+            make -j$(nproc --all) O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           fi
           }
 
@@ -121,25 +134,25 @@ runs:
                 echo "=================================="
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS true
             elif [ "${{ env.GNU_GCC }}" == "true" ]; then
                 echo "============================"
                 echo "=Detected Clang and GNU GCC="
                 echo "============================"
                 export "${{ env.GCC_64 }}"
                 export "${{ env.GCC_32 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS true
             elif [ -n "${{ env.GCC_64 }}" ]; then
                 echo "==========================="
                 echo "=Detected Clang and GCC 64="
                 echo "==========================="
                 export "${{ env.GCC_64 }}"
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS true
             else
                 echo "====================="
                 echo "=Detected Only Clang="
                 echo "====================="
-                BUILD_PROCESS "${{ env.EXTRA_CMDS }}" "${{ env.CUSTOM_CMDS }}"
+                BUILD_PROCESS true
             fi
 
           elif [ "${{ env.KERNEL_ARCH }}" == "arm64" ]; then
