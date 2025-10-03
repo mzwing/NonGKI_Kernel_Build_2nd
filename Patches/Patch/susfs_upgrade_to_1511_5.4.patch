@@ -60,7 +60,7 @@ index 4a74eb2..f9fe45f 100644
  	mnt = real_mount(file->f_path.mnt);
 -	if (likely(susfs_is_current_non_root_user_app_proc()) &&
 +	if (likely(susfs_is_current_proc_umounted()) &&
- 			mnt->mnt_id >= DEFAULT_SUS_MNT_ID) {
+ 			mnt->mnt_id >= DEFAULT_KSU_MNT_ID) {
  		struct path path;
  		char *pathname = kmalloc(PAGE_SIZE, GFP_KERNEL);
 diff --git a/fs/stat.c b/fs/stat.c
@@ -86,7 +86,7 @@ index 9c1fa9c..248b43e 100644
  	mnt = real_mount(path->mnt);
 -	if (likely(susfs_is_current_non_root_user_app_proc())) {
 +	if (likely(susfs_is_current_proc_umounted())) {
- 		for (; mnt->mnt_id >= DEFAULT_SUS_MNT_ID; mnt = mnt->mnt_parent) {}
+ 		for (; mnt->mnt_id >= DEFAULT_KSU_MNT_ID; mnt = mnt->mnt_parent) {}
  	}
  	error = statfs_by_dentry(mnt->mnt.mnt_root, buf);
 diff --git a/fs/susfs.c b/fs/susfs.c
@@ -135,10 +135,10 @@ index c34f6ef..8dac672 100644
  #define TRY_UMOUNT_DETACH 1 /* used by susfs_try_umount() */
  
 -#define DEFAULT_SUS_MNT_ID 100000 /* used by mount->mnt_id */
-+#define DEFAULT_SUS_MNT_ID 300000 /* used by mount->mnt_id */
++#define DEFAULT_KSU_MNT_ID 300000 /* used by mount->mnt_id */
  #define DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE 1000000 /* used by vfsmount->susfs_mnt_id_backup */
 -#define DEFAULT_SUS_MNT_GROUP_ID 1000 /* used by mount->mnt_group_id */
-+#define DEFAULT_SUS_MNT_GROUP_ID 3000 /* used by mount->mnt_group_id */
++#define DEFAULT_KSU_MNT_GROUP_ID 3000 /* used by mount->mnt_group_id */
  
  /*
   * mount->mnt.susfs_mnt_id_backup => storing original mnt_id of normal mounts or custom sus mnt_id of sus mounts
