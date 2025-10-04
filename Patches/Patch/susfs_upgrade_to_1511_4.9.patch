@@ -300,7 +300,7 @@ index c2e8bb9..c4167fd 100644
  #define SUSFS_VARIANT "NON-GKI"
  #else
 diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
-index 29a01e7..4ab620b 100644
+index 29a01e7..c9ee210 100644
 --- a/include/linux/susfs_def.h
 +++ b/include/linux/susfs_def.h
 @@ -33,9 +33,9 @@
@@ -332,21 +332,23 @@ index 29a01e7..4ab620b 100644
  #define DATA_ADB_NO_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT "/data/adb/susfs_no_auto_add_try_umount_for_bind_mount"
  
 -static inline bool susfs_is_current_non_root_user_app_proc(void) {
+-	return test_ti_thread_flag(&current->thread_info, TIF_NON_ROOT_USER_APP_PROC);
 +static inline bool susfs_is_current_proc_umounted(void) {
- 	return test_ti_thread_flag(&current->thread_info, TIF_NON_ROOT_USER_APP_PROC);
++	return test_ti_thread_flag(&current->thread_info, TIF_PROC_UMOUNTED);
  }
  
 -static inline void susfs_set_current_non_root_user_app_proc(void) {
-+static inline void susfs_set_current_proc_umounted(void) {
- 	set_ti_thread_flag(&current->thread_info, TIF_NON_ROOT_USER_APP_PROC);
- }
- 
+-	set_ti_thread_flag(&current->thread_info, TIF_NON_ROOT_USER_APP_PROC);
+-}
+-
 -static inline bool susfs_is_current_proc_su_not_allowed(void) {
 -	return test_ti_thread_flag(&current->thread_info, TIF_PROC_ROOT_NOT_ALLOWED);
 -}
 -
 -static inline void susfs_set_current_proc_su_not_allowed(void) {
 -	set_ti_thread_flag(&current->thread_info, TIF_PROC_ROOT_NOT_ALLOWED);
--}
--
++static inline void susfs_set_current_proc_umounted(void) {
++	set_ti_thread_flag(&current->thread_info, TIF_PROC_UMOUNTED);
+ }
+ 
  #endif // #ifndef KSU_SUSFS_DEF_H
