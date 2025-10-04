@@ -286,6 +286,19 @@ index 60c2b53..bb7203e 100644
  		SUSFS_LOGE("skip setting SUS_MOUNT inode state for path '%s' since its source mount has a legit peer group id\n", pathname);
  		// return 0 here as we still want it to be added to try_umount list
  		return 0;
+diff --git a/include/linux/susfs.h b/include/linux/susfs.h
+index c2e8bb9..c4167fd 100644
+--- a/include/linux/susfs.h
++++ b/include/linux/susfs.h
+@@ -8,7 +8,7 @@
+ #include <linux/path.h>
+ #include <linux/susfs_def.h>
+ 
+-#define SUSFS_VERSION "v1.5.10"
++#define SUSFS_VERSION "v1.5.11"
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
+ #define SUSFS_VARIANT "NON-GKI"
+ #else
 diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
 index 29a01e7..4ab620b 100644
 --- a/include/linux/susfs_def.h
