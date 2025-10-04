@@ -1,5 +1,5 @@
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 2fc2def..b9bbf58 100644
+index 2fc2def..12e434d 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -34,11 +34,12 @@
@@ -8,16 +8,18 @@ index 2fc2def..b9bbf58 100644
  extern bool susfs_is_current_zygote_domain(void);
 +extern bool susfs_is_boot_completed_triggered;
  
- static DEFINE_IDA(susfs_mnt_id_ida);
- static DEFINE_IDA(susfs_mnt_group_ida);
+-static DEFINE_IDA(susfs_mnt_id_ida);
+-static DEFINE_IDA(susfs_mnt_group_ida);
 -static int susfs_mnt_id_start = DEFAULT_SUS_MNT_ID;
 -static int susfs_mnt_group_start = DEFAULT_SUS_MNT_GROUP_ID;
++static DEFINE_IDA(susfs_ksu_mnt_id_ida);
++static DEFINE_IDA(susfs_ksu_mnt_group_ida);
 +static int susfs_mnt_id_start = DEFAULT_KSU_MNT_ID;
 +static int susfs_mnt_group_start = DEFAULT_KSU_MNT_GROUP_ID;
  
  #define CL_COPY_MNT_NS BIT(25) /* used by copy_mnt_ns() */
  #endif
-@@ -126,7 +127,7 @@ static inline struct hlist_head *mp_hash(struct dentry *dentry)
+@@ -126,15 +127,15 @@ static inline struct hlist_head *mp_hash(struct dentry *dentry)
  }
  
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
@@ -26,7 +28,17 @@ index 2fc2def..b9bbf58 100644
  static int susfs_mnt_alloc_id(struct mount *mnt)
  {
  	int res;
-@@ -170,13 +171,13 @@ static void mnt_free_id(struct mount *mnt)
+ 
+ retry:
+-	ida_pre_get(&susfs_mnt_id_ida, GFP_KERNEL);
++	ida_pre_get(&susfs_ksu_mnt_id_ida, GFP_KERNEL);
+ 	spin_lock(&mnt_id_lock);
+-	res = ida_get_new_above(&susfs_mnt_id_ida, susfs_mnt_id_start, &mnt->mnt_id);
++	res = ida_get_new_above(&susfs_ksu_mnt_id_ida, susfs_mnt_id_start, &mnt->mnt_id);
+ 	if (!res)
+ 		susfs_mnt_id_start = mnt->mnt_id + 1;
+ 	spin_unlock(&mnt_id_lock);
+@@ -170,15 +171,15 @@ static void mnt_free_id(struct mount *mnt)
  	int id = mnt->mnt_id;
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
  	int mnt_id_backup = mnt->mnt.susfs_mnt_id_backup;
@@ -41,33 +53,42 @@ index 2fc2def..b9bbf58 100644
 -	if (unlikely(mnt->mnt_id >= DEFAULT_SUS_MNT_ID)) {
 +	if (unlikely(mnt->mnt_id >= DEFAULT_KSU_MNT_ID)) {
  		spin_lock(&mnt_id_lock);
- 		ida_remove(&susfs_mnt_id_ida, id);
+-		ida_remove(&susfs_mnt_id_ida, id);
++		ida_remove(&susfs_ksu_mnt_id_ida, id);
  		if (susfs_mnt_id_start > id)
-@@ -214,10 +215,10 @@ static int mnt_alloc_group_id(struct mount *mnt)
+ 			susfs_mnt_id_start = id;
+ 		spin_unlock(&mnt_id_lock);
+@@ -214,11 +215,11 @@ static int mnt_alloc_group_id(struct mount *mnt)
  	int res;
  
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	if (mnt->mnt_id >= DEFAULT_SUS_MNT_ID) {
+-		if (!ida_pre_get(&susfs_mnt_group_ida, GFP_KERNEL))
 +	if (mnt->mnt_id >= DEFAULT_KSU_MNT_ID) {
- 		if (!ida_pre_get(&susfs_mnt_group_ida, GFP_KERNEL))
++		if (!ida_pre_get(&susfs_ksu_mnt_group_ida, GFP_KERNEL))
  			return -ENOMEM;
 -		// If so, assign a sus mnt_group id DEFAULT_SUS_MNT_GROUP_ID from susfs_mnt_group_ida
-+		// If so, assign a sus mnt_group id DEFAULT_KSU_MNT_GROUP_ID from susfs_mnt_group_ida
- 		res = ida_get_new_above(&susfs_mnt_group_ida,
+-		res = ida_get_new_above(&susfs_mnt_group_ida,
++		// If so, assign a sus mnt_group id DEFAULT_KSU_MNT_GROUP_ID from susfs_ksu_mnt_group_ida
++		res = ida_get_new_above(&susfs_ksu_mnt_group_ida,
  					susfs_mnt_group_start,
  					&mnt->mnt_group_id);
-@@ -245,9 +246,9 @@ void mnt_release_group_id(struct mount *mnt)
+ 		if (!res)
+@@ -245,10 +246,10 @@ void mnt_release_group_id(struct mount *mnt)
  {
  	int id = mnt->mnt_group_id;
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	// If mnt->mnt_group_id >= DEFAULT_SUS_MNT_GROUP_ID, it means 'mnt' is also sus mount,
-+	// If mnt->mnt_group_id >= DEFAULT_KSU_MNT_GROUP_ID, it means 'mnt' is also sus mount,
- 	// then we free the mnt->mnt_group_id from susfs_mnt_group_ida
+-	// then we free the mnt->mnt_group_id from susfs_mnt_group_ida
 -	if (id >= DEFAULT_SUS_MNT_GROUP_ID) {
+-		ida_remove(&susfs_mnt_group_ida, id);
++	// If mnt->mnt_group_id >= DEFAULT_KSU_MNT_GROUP_ID, it means 'mnt' is also sus mount,
++	// then we free the mnt->mnt_group_id from susfs_ksu_mnt_group_ida
 +	if (id >= DEFAULT_KSU_MNT_GROUP_ID) {
- 		ida_remove(&susfs_mnt_group_ida, id);
++		ida_remove(&susfs_ksu_mnt_group_ida, id);
  		if (susfs_mnt_group_start > id)
  			susfs_mnt_group_start = id;
+ 		mnt->mnt_group_id = 0;
 @@ -1153,7 +1154,7 @@ bypass_orig_flow:
  			rcu_read_lock();
  			mnt_id = list_first_entry(&mnt_ns->list, struct mount, mnt_list)->mnt_id;
