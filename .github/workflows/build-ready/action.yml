@@ -198,16 +198,24 @@ runs:
           # Core
           if [[ ${{ env.KERNELSU_AUTO_GET }} == "true" ]]; then
 
-            if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+            if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ] && [[ "${{ env.BUILD_DEBUGGER }}" == "false" ]]; then
                 if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]]; then
                     if grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
-                        echo "Your device supported SukiSU-Ultra!"
+                        echo "Your device supported the Manual SU function provided by SukiSU-Ultra!"
+                        echo "CONFIG_KSU_MANUAL_SU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
                     else
-                        echo "Your device cannot supported SukiSU-Ultra!"
-                        echo "You need merge patch about task_alloc."
-                    false
+                        echo ">>>Warning!<<<"
+                        echo "Your device cannot support the Manual SU function provided by SukiSU-Ultra!"
+                        echo "You can still compile it, but if you want to get Manual SU functionality, you need to port the task_alloc related functionality."
+                        echo ">>>>>>><<<<<<<"
+                        echo "CONFIG_KSU_MANUAL_SU=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
                     fi
                 fi
+            elif [[ "${{ env.BUILD_DEBUGGER }}" == "true" ]]; then
+                echo ">>>Warning!<<<"
+                echo "Kernel defects are also not blocked because the debugger feature is enabled."
+                echo ">>>>>>><<<<<<<"
+                echo "CONFIG_KSU_MANUAL_SU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             fi
 
             KERNELSU_AUTO
@@ -226,6 +234,11 @@ runs:
                         echo "CONFIG_KSU_MANUAL_SU=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
                     fi
                 fi
+            elif [[ "${{ env.BUILD_DEBUGGER }}" == "true" ]]; then
+                echo ">>>Warning!<<<"
+                echo "Kernel defects are also not blocked because the debugger feature is enabled."
+                echo ">>>>>>><<<<<<<"
+                echo "CONFIG_KSU_MANUAL_SU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             fi
 
             KERNELSU_MANUAL
