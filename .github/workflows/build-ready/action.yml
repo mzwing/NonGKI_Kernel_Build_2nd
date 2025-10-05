@@ -205,10 +205,10 @@ runs:
 
             if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ] && [[ "${{ env.BUILD_DEBUGGER }}" == "false" ]]; then
                 if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
-                    if grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
-                        echo "Your device supported SukiSU-Ultra!"
-                    elif [[ "${{ env.BUILD_DEBUGGER }}" == "true" ]]; then
+                    if [[ "${{ env.BUILD_DEBUGGER }}" == "true" ]]; then
                         echo "Your enabled build debugger. You maybe caused problem because of task_alloc."
+                    elif grep -q "struct list_head task_alloc" "include/linux/lsm_hooks.h"; then
+                        echo "Your device supported SukiSU-Ultra!"
                     else
                         echo "Your device cannot supported SukiSU-Ultra!"
                         echo "You need merge patch about task_alloc."
