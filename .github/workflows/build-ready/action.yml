@@ -132,6 +132,16 @@ runs:
                 else
                     KERNELSU_BRANCH="next"
                 fi
+            elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "wild" ]]; then
+                KERNELSU_AUTHOR="WildKernels"
+                KERNELSU_NAME="Wild_KSU"
+                KERNELSU_ORIGIN_BRANCH="wild"
+                if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
+                    echo "Wild KSU doesn't support SuSFS! "
+                    false
+                else
+                    KERNELSU_BRANCH="wild"
+                fi
             else
                 echo "Please input vaild fork name!"
                 false
