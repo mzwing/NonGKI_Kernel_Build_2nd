@@ -9,6 +9,7 @@
 | Xiaomi Mix2s | All | polaris | [4.19/duckyduckG/sdm845_419](https://github.com/duckyduckG/android_kernel_xiaomi_sdm845_419) | Based AOSP | 15 | AnyKernel3 | SukiSU(U) | ✅ | Tracepoint | ❌ | ❌ | Testing |  
 | Redmi Note 10 Pro | CN | chopin | [4.14/ChopinKernels/android_T](https://github.com/ChopinKernels/android_kernel_chopin_android_T) | MIUI | 13 | AnyKernel3 | SukiSU(U) | ❌ | Normal | ❌ | ❌ | Testing |  
 | Smartisan U3 Pro | CN | osborn | [4.4/anrui2032/LineageOS](https://github.com/anrui2032/android_kernel_smartisan_sdm660.git) | Lineage OS 18 | 11 | AnyKernel3 | rsuntk | ❌ | Normal | ❌ | ❌ | Stable |  
+| Redmi Note 10 Pro | INT | sweet | [4.14/negrroo/Lawrun_sm6150](https://github.com/negrroo/LawRun_xiaomi_sm6150) | MIUI | 13 | AnyKernel3 | rsuntk | ❌ | Normal | ❌ | ❌ | Testing |  
 
 **English**:  
 - OnePlus 8 OxygenOS/ColorOS 13.1 has been tested and can be used on the OnePlus 8, 8T, 8 Pro and 9R.
