@@ -1,4 +1,4 @@
-name: Build Redmi Note 10 Pro (MIUI A13)
+name: Build Redmi Note 10 Pro (Chopin) (MIUI A13)
 
 on:
   workflow_call:
@@ -84,7 +84,7 @@ env:
 
 jobs:
   build-kernel:
-    name: Redmi Note 10 Pro (MIUI A13)
+    name: Redmi Note 10 Pro (Chopin) (MIUI A13)
     runs-on: ubuntu-latest # u can changed to ubuntu 22.04, and need container set ubuntu-latest
     container: ubuntu:focal # if u need use arch linux -> archlinux/archlinux:latest or ubuntu 20.04 -> ubuntu:focal
     env:
