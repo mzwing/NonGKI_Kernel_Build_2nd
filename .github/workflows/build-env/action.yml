@@ -95,15 +95,29 @@ runs:
             apt-get install libtinfo5 -y
 
             if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
-                apt install python2 python3 -y
+                apt install python3 -y
                 rm -rf /usr/bin/python
                 ln -s /usr/bin/python3 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 3 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
             elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
                 apt install python2 -y
                 rm -rf /usr/bin/python
                 ln -s /usr/bin/python2.7 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 2 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
             else
-                echo "You need choose a python version."
+                echo ">>>>>>>>>>>>>>>>>Error<<<<<<<<<<<<<<<<<"
+                echo ">                                     <"
+                echo ">You need choose a vaild python version"
+                echo ">                                     <"
+                echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
                 false
             fi
 
@@ -115,22 +129,36 @@ runs:
             sudo apt-get install libtinfo5 -y
 
             if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
-                sudo apt install python2 python3 -y
+                sudo apt install python3 -y
                 sudo rm -rf /usr/bin/python
                 sudo ln -s /usr/bin/python3 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 3 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
             elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
                 sudo apt install python2 -y
                 sudo rm -rf /usr/bin/python
                 sudo ln -s /usr/bin/python2.7 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 2 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
             else
-                echo "You need choose a python version."
+                echo ">>>>>>>>>>>>>>>>>Error<<<<<<<<<<<<<<<<<"
+                echo ">                                     <"
+                echo ">You need choose a vaild python version"
+                echo ">                                     <"
+                echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
                 false
             fi
 
           elif [ "${{ env.SYSTEM_VERSION }}" == "newer" ]; then
 
             sudo apt update
-            sudo apt install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3 cpio -y
+            sudo apt install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler cpio -y
             sudo apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full -y
 
             # Install Libtinfo5
@@ -138,10 +166,80 @@ runs:
             sudo apt install ./libtinfo5.deb
             rm -f libtinfo5.deb
 
+            if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
+                sudo apt install python3 -y
+                sudo rm -rf /usr/bin/python
+                sudo ln -s /usr/bin/python3 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 3 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
+            elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
+                wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+                tar -xvf Python-2.7.18.tgz
+                cd Python-2.7.18
+                ./configure
+                make -j$(nproc)
+                sudo make install
+                curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+                sudo python2.7 get-pip.py
+                sudo update-alternatives --install /usr/bin/python python /usr/local/lib/python2.7
+                cd ../
+                rm -rf Python-2.7.18 Python-2.7.18.tgz
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 2 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
+            else
+                echo ">>>>>>>>>>>>>>>>>Error<<<<<<<<<<<<<<<<<"
+                echo ">                                     <"
+                echo ">You need choose a vaild python version"
+                echo ">                                     <"
+                echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
+                false
+            fi
+
           elif [ "${{ env.SYSTEM_VERSION }}" == "arch" ]; then
 
             pacman -Syyu --noconfirm
-            pacman -S git base-devel systemd wget rustup curl patch ccache automake flex lzop bison gperf zip curl bzip2 squashfs-tools pngcrush schedtool make optipng maven pwgen minicom bc unzip 7zip zstd binutils gcc python3 wget which libxml2-legacy cpio --noconfirm
+            pacman -S git base-devel systemd wget rustup curl patch ccache automake flex lzop bison gperf zip curl bzip2 squashfs-tools pngcrush schedtool make optipng maven pwgen minicom bc unzip 7zip zstd binutils gcc wget which libxml2-legacy cpio --noconfirm
+
+            if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
+                pacman -S python3 --noconfirm
+                rm -rf /usr/bin/python
+                ln -s /usr/bin/python3 /usr/bin/python
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 3 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
+            elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
+                wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+                tar -xvf Python-2.7.18.tgz
+                cd Python-2.7.18
+                ./configure
+                make -j$(nproc)
+                make install
+                curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+                python2.7 get-pip.py
+                update-alternatives --install /usr/bin/python python /usr/local/lib/python2.7
+                cd ../
+                rm -rf Python-2.7.18 Python-2.7.18.tgz
+                echo ">>>>>>><<<<<<<"
+                echo ">            <"
+                echo "> Python - 2 <"
+                echo ">            <"
+                echo ">>>>>>><<<<<<<"
+            else
+                echo ">>>>>>>>>>>>>>>>>Error<<<<<<<<<<<<<<<<<"
+                echo ">                                     <"
+                echo ">You need choose a vaild python version"
+                echo ">                                     <"
+                echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
+                false
+            fi
 
             # Update Rust Toolchain
             rustup default stable
