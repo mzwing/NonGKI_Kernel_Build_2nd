@@ -39,9 +39,6 @@ for i in "${patch_files[@]}"; do
         print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
         print "\ttrace_ksu_trace_execveat_hook((int *)AT_FDCWD, &filename, &argv, &envp, 0);";
         print "#endif";
-    } else if (count == 2) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
-        print "#endif";
     }
 }
 {
@@ -56,9 +53,6 @@ awk '
     if (count == 1) {
         print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
         print "\ttrace_ksu_trace_execveat_hook((int *)AT_FDCWD, &filename, &argv, &envp, 0);";
-        print "#endif";
-    } else if (count == 2) {
-        print "#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)";
         print "#endif";
     }
 }
