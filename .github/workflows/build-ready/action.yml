@@ -145,6 +145,16 @@ runs:
                 else
                     KERNELSU_BRANCH="wild"
                 fi
+            elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "jingmatrix" ]]; then
+                KERNELSU_AUTHOR="JingMatrix"
+                KERNELSU_NAME="KernelSU"
+                KERNELSU_ORIGIN_BRANCH="dev"
+                if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
+                    echo "${{ env.KERNELSU_AUTO_FORK }} doesn't support SuSFS! "
+                    false
+                else
+                    KERNELSU_BRANCH="dev"
+                fi
             else
                 echo "Please input vaild fork name!"
                 false
