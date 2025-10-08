@@ -75,7 +75,6 @@ It also aims to provide an easier compilation process using **GitHub Actions**, 
   - [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra) - @ShirkNeko
   - [Next](https://github.com/KernelSU-Next/KernelSU-Next) - @rifsxd
     - [Wild](https://github.com/WildKernels/Wild_KSU) - @TheWildJames
-  - [JingMatrix](https://github.com/JingMatrix/KernelSU) - @JingMatrix
 - [SuSFS](https://gitlab.com/simonpunk/susfs4ksu) - @simonpunk
 - [Re:Kernel](https://github.com/Sakion-Team/Re-Kernel) - @Sakion-Team
 - And to more open-source kernel authors.
