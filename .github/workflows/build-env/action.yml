@@ -121,6 +121,10 @@ runs:
                 false
             fi
 
+            echo "Python Version"
+            echo ">$(python -V)"
+            echo ">>EOF"
+
           elif [ "${{ env.SYSTEM_VERSION }}" == "older" ]; then
 
             sudo apt-get update
@@ -155,6 +159,12 @@ runs:
                 false
             fi
 
+            echo "Python Version"
+            echo ">"
+            echo "$(python -V)"
+            echo ">"
+            echo ">EOF"
+
           elif [ "${{ env.SYSTEM_VERSION }}" == "newer" ]; then
 
             sudo apt update
@@ -184,7 +194,7 @@ runs:
                 sudo make install
                 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
                 sudo python2.7 get-pip.py
-                sudo update-alternatives --install /usr/bin/python python /usr/local/lib/python2.7
+                sudo update-alternatives --install /usr/bin/python python /usr/local/lib/python2.7 1
                 cd ../
                 rm -rf Python-2.7.18 Python-2.7.18.tgz
                 echo ">>>>>>><<<<<<<"
@@ -200,6 +210,12 @@ runs:
                 echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
                 false
             fi
+
+            echo "Python Version"
+            echo ">"
+            echo "$(python -V)"
+            echo ">"
+            echo ">EOF"
 
           elif [ "${{ env.SYSTEM_VERSION }}" == "arch" ]; then
 
@@ -216,22 +232,12 @@ runs:
                 echo ">            <"
                 echo ">>>>>>><<<<<<<"
             elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
-                wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
-                tar -xvf Python-2.7.18.tgz
-                cd Python-2.7.18
-                ./configure
-                make -j$(nproc)
-                make install
-                curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-                python2.7 get-pip.py
-                update-alternatives --install /usr/bin/python python /usr/local/lib/python2.7
-                cd ../
-                rm -rf Python-2.7.18 Python-2.7.18.tgz
-                echo ">>>>>>><<<<<<<"
-                echo ">            <"
-                echo "> Python - 2 <"
-                echo ">            <"
-                echo ">>>>>>><<<<<<<"
+                echo ">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<"
+                echo ">                              <"
+                echo "> Could not supported Python 2 <"
+                echo ">                              <"
+                echo ">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<"
+                false
             else
                 echo ">>>>>>>>>>>>>>>>>Error<<<<<<<<<<<<<<<<<"
                 echo ">                                     <"
@@ -240,6 +246,12 @@ runs:
                 echo ">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<"
                 false
             fi
+
+            echo "Python Version"
+            echo ">"
+            echo "$(python -V)"
+            echo ">"
+            echo ">EOF"
 
             # Update Rust Toolchain
             rustup default stable
