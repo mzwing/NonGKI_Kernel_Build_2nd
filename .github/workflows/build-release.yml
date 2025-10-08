@@ -103,6 +103,8 @@ jobs:
           KSU_NEXT_VERSION=$(cd KernelSU-Next && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
           git clone -b wild https://github.com/WildKernels/Wild_KSU.git KernelSU-Wild
           KSU_WILD_VERSION=$(cd KernelSU-Wild && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
+          git clone -b dev https://github.com/JingMatrix/KernelSU.git KernelSU-JingMatrix
+          KSU_JINGMATRIX_VERSION=$(cd KernelSU-Wild && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
 
           # Input release note
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
@@ -112,6 +114,7 @@ jobs:
           echo "[KernelSU-SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra) Version: $KSU_SUKISU_ULTRA_VERSION  " >> $GITHUB_ENV
           echo "[KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next) Version: $KSU_NEXT_VERSION  " >> $GITHUB_ENV
           echo "[KernelSU-Wild](https://github.com/WildKernels/Wild_KSU) Version: $KSU_WILD_VERSION  " >> $GITHUB_ENV
+          echo "[KernelSU-JingMatrix](ttps://github.com/JingMatrix/KernelSU) Version: $KSU_JINGMATRIX_VERSION  " >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       # Create GitHub Release and upload files if make_release is true
