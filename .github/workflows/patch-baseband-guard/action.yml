@@ -1,0 +1,14 @@
+name: 'Patch Baseband Guard for Kernel.'
+
+runs:
+  using: 'composite'
+  steps:
+      - name: Patch Baseband Guard
+        if: env.BASEBAND_GUARD_ENABLE == 'true'
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          wget -O- https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh | bash
+          echo "CONFIG_BBG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
+          echo "Patched Baseband Guard for your kernel successfully."
