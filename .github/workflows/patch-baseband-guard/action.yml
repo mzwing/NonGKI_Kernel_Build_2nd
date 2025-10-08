@@ -11,4 +11,8 @@ runs:
           wget -O- https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh | bash
           echo "CONFIG_BBG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
+          if [[ "${{ env.BASEBAND_GUARD_BOOT }}" == "true" ]]; then
+            echo "CONFIG_BBG_BLOCK_BOOT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          fi
+
           echo "Patched Baseband Guard for your kernel successfully."
