@@ -77,4 +77,5 @@ It also aims to provide an easier compilation process using **GitHub Actions**, 
     - [Wild](https://github.com/WildKernels/Wild_KSU) - @TheWildJames
 - [SuSFS](https://gitlab.com/simonpunk/susfs4ksu) - @simonpunk
 - [Re:Kernel](https://github.com/Sakion-Team/Re-Kernel) - @Sakion-Team
+- [Baseband Guard](https://github.com/vc-teahouse/Baseband-guard) - @秋刀鱼
 - And to more open-source kernel authors.
