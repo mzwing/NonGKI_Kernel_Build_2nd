@@ -1,107 +1,34 @@
 #!/usr/bin/env bash
-# Shell authon: JackA1ltman <cs2dtzq@163.com>
-# 20250918
 
-echo "Starting check .rej files..."
+if grep -q "Error 2" error.log; then
+    echo "Detected Error 2，Extracting relevant files..."
 
-if ! find . -name "*.rej" -type f | head -1 > /dev/null 2>&1; then
-    echo "Current folder not found .rej"
-    exit 0
-fi
+    grep -i "error:" error.log > error_lines.txt
 
-echo "Found .rej files:"
-find . -name "*.rej" -type f
-echo "----------------------------------------"
+    files=$(awk -F: '{print $1}' error_lines.txt | sort | uniq)
 
-temp_dir=$(mktemp -d)
-echo "Create tmp folder: $temp_dir"
+    tmp_dir="error_files"
+    mkdir -p "$tmp_dir"
 
-rej_count=0
-original_count=0
-missing_count=0
+    for file in $files; do
+        clean_path=$(echo "$file" | sed 's#^\.\./##')
 
-find . -name "*.rej" -type f -print0 | while IFS= read -r -d '' rej_file; do
-    ((rej_count++))
-    echo "Processing of the $rej_count file: $rej_file"
+        src_file="$clean_path"
 
-    original_file="${rej_file%.rej}"
-
-    temp_rej_path="$temp_dir/$rej_file"
-    temp_orig_path="$temp_dir/$original_file"
-
-    mkdir -p "$(dirname "$temp_rej_path")"
-
-    if cp "$rej_file" "$temp_rej_path"; then
-        echo "  ✓ Copied: $rej_file"
-    else
-        echo "  ✗ Copy failed: $rej_file"
-        continue
-    fi
-
-    if [[ -f "$original_file" ]]; then
-        mkdir -p "$(dirname "$temp_orig_path")"
-        if cp "$original_file" "$temp_orig_path"; then
-            echo "  ✓ Copied: $original_file"
-            ((original_count++))
+        if [ -f "$src_file" ]; then
+            mkdir -p "$tmp_dir/$(dirname "$clean_path")"
+            cp "$src_file" "$tmp_dir/$clean_path"
         else
-            echo "  ✗ Copied origin folder failed: $original_file"
+            echo "Warning：File $src_file not exist，Skipped."
         fi
-    else
-        echo "  ! Origin file not existed: $original_file"
-        ((missing_count++))
-    fi
+    done
 
-    echo "$rej_count" > "$temp_dir/.rej_count"
-    echo "$original_count" > "$temp_dir/.original_count"
-    echo "$missing_count" > "$temp_dir/.missing_count"
-done
+    zip_file="error_files.zip"
+    zip -r "$zip_file" "$tmp_dir"
 
-if [[ -f "$temp_dir/.rej_count" ]]; then
-    rej_count=$(cat "$temp_dir/.rej_count")
-    original_count=$(cat "$temp_dir/.original_count")
-    missing_count=$(cat "$temp_dir/.missing_count")
+    echo "Related files have been packaged into $zip_file"
 
-    rm $temp_dir/.rej_count
-    rm $temp_dir/.original_count
-    rm $temp_dir/.missing_count
-fi
-
-echo "----------------------------------------"
-echo "Files:"
-echo "  .rej files count: $rej_count"
-echo "  Origin files: $original_count"
-echo "  Missing origin files: $missing_count"
-
-if [[ ! -d "$temp_dir" ]] || [[ -z "$(find "$temp_dir" -name "*.rej" 2>/dev/null)" ]]; then
-    echo "Error: have no any files to tmp folder"
-    rm -rf "$temp_dir"
-    exit 1
-fi
-
-archive_name="rej_files.tar.gz"
-
-echo "Create null archive: $archive_name"
-
-if tar -czf "$archive_name" -C "$temp_dir" .; then
-    echo "✓ Create archive successfully: $archive_name"
-
-    archive_size=$(du -h "$archive_name" | cut -f1)
-    echo "Archive size: $archive_size"
-
-    echo "Archive content:"
-    tar -tzf "$archive_name" | head -20
-    if [[ $(tar -tzf "$archive_name" | wc -l) -gt 20 ]]; then
-        echo "... (Total $(tar -tzf "$archive_name" | wc -l) file(s))"
-    fi
-
+    rm -rf "$tmp_dir" error_lines.txt
 else
-    echo "✗ Create archive failed : $archive_name"
-    rm -rf "$temp_dir"
-    exit 1
+    echo "Cannot detected Error 2，compile successfully or not have the error."
 fi
-
-echo "Cleaning tmp folder: $temp_dir"
-rm -rf "$temp_dir"
-
-echo "✓ Successfully！"
-echo "Archive name: $PWD/$archive_name"

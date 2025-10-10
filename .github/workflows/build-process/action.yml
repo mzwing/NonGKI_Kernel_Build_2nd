@@ -22,43 +22,6 @@ runs:
           sed -i '/PHONY += vdso_install/i \ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)\n$(KBUILD_DTBO_IMG): dtbs\n\t$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@\n\nall: $(KBUILD_DTBO_IMG)\nendif' arch/arm64/Makefile
           sed -i '/dtc-tmp = $(subst $(comma),_,$(dot-target)\.dts\.tmp)/a \#DTBO\n# mkdtimg\n#----------------------------------------------------------------------------\nquiet_cmd_mkdtimg = DTBOIMG $@\ncmd_mkdtimg = python3 $(srctree)\/scripts\/dtc\/mkdtboimg.py create $@ --page_size=4096 $(filter-out FORCE,$^)' ./scripts/Makefile.lib
 
-      - name: Patch Debugger
-        if: env.BUILD_DEBUGGER == 'true'
-        shell: bash
-        run: |
-          title() {
-              echo -e "\033[1;36m"
-              echo "╔════════════════════════════════════════════════════════════════════╗"
-              echo "║                                                                    ║"
-              echo "╚════════════════════════════════════════════════════════════════════╝"
-              echo -e "\033[1;36m"
-          }
-
-          footer(){
-              echo -e "\033[1;36m"
-              echo "╔════════════════════════════════════════════════════════════════════╗"
-              echo "║                               EOF                                  ║"
-              echo "╚════════════════════════════════════════════════════════════════════╝"
-              echo -e "\033[1;36m"
-          }
-
-          cd $GITHUB_WORKSPACE/device_kernel/
-          mapfile -t REJ_FILES < <(find . -type f -name "*.rej")
-          if [ ${#REJ_FILES[@]} -eq 0 ]; then
-            echo "Your kernel have no any rej files."
-          else
-            title
-            for CAT_REJ in "${REJ_FILES[@]}"; do
-                echo "Found .rej file: $CAT_REJ"
-                cat $CAT_REJ
-                footer
-            done
-
-            if [[ "${{ env.SKIP_PATCH }}" != "true" ]]; then
-              false
-            fi
-          fi
-
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -224,15 +187,10 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel/
 
           cp /tmp/Bin/check_error.sh ./
-          bash check_error.sh
+          cp /tmp/Bin/pack_error_files.sh ./
 
-          if [ -f "have_error" ]; then
-            cp /tmp/Bin/pack_error_files.sh ./
-            bash pack_error_files.sh
-            false
-          else
-            echo "Skipped."
-          fi
+          bash check_error.sh
+          bash pack_error_files.sh
 
       - name: KPM Patcher (Experiment)
         if: env.KPM_ENABLE == 'true'
@@ -305,7 +263,7 @@ runs:
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: error_files
+          name: compile_error_files
           path: |
             device_kernel/error.log
-            device_kernel/rej_files.tar.gz
+            device_kernel/error_files.zip
