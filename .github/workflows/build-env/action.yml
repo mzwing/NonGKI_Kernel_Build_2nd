@@ -49,13 +49,13 @@ runs:
               elif [ "$VERSION_ID" = "24.04" ]; then
                   echo "SYSTEM_VERSION=newer" >> $GITHUB_ENV
               else
-                  echo "\033[0;31m❌ Not Supported: $VERSION_ID"
+                  echo "❌ Not Supported: $VERSION_ID"
                   false
               fi
           elif [ "$ID" = "arch" ]; then
               echo "SYSTEM_VERSION=arch" >> $GITHUB_ENV
           else
-              echo "\033[0;31m❌ Not Supported: $PRETTY_NAME"
+              echo "❌ Not Supported: $PRETTY_NAME"
               false
           fi
 
@@ -257,35 +257,31 @@ runs:
             rustup default stable
 
           else
-            echo "\033[0;31m❌ Your system os cannot supported."
+            echo "❌ Your system os cannot supported."
           fi
 
       - name: Install GNU GCC
         if: env.GCC_GNU == 'true'
         shell: bash
         run: |
-          if [ -z ${{ env.GCC_64_SOURCE }} ] || [ -z ${{ env.GCC_32_SOURCE }} ]; then
-                if [ "${{ env.SYSTEM_VERSION }}" == "arch" ] || [ "${{ env.SYSTEM_VERSION }}" == "newer" ]; then
+          if [ "${{ env.SYSTEM_VERSION }}" == "newer" ] || [ "${{ env.SYSTEM_VERSION }}" == "older" ] || [ "${{ env.SYSTEM_VERSION }}" == "oldest" ]; then
 
-                    sudo apt install binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
-                    sudo apt install gcc-arm-linux-gnueabi -y
+            sudo apt install binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
+            sudo apt install gcc-arm-linux-gnueabi -y
 
-                    echo "GCC_64=CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
-                    echo "GCC_32=CROSS_COMPILE_ARM32=arm-linux-gnueabi-" >> $GITHUB_ENV
+            echo "GCC_64=CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+            echo "GCC_32=CROSS_COMPILE_ARM32=arm-linux-gnueabi-" >> $GITHUB_ENV
 
-                elif [ "${{ env.SYSTEM_VERSION }}" == "arch" }} ]; then
+          elif [ "${{ env.SYSTEM_VERSION }}" == "arch" }} ]; then
 
-                    pacman -S aarch64-linux-gnu-binutils aarch64-linux-gnu-gcc aarch64-linux-gnu-glibc aarch64-linux-gnu-linux-api-headers aarch64-linux-gnu-glibc --noconfirm
-                    pacman -S arm-none-eabi-binutils arm-none-eabi-gcc arm-none-eabi-newlib --noconfirm
+            pacman -S aarch64-linux-gnu-binutils aarch64-linux-gnu-gcc aarch64-linux-gnu-glibc aarch64-linux-gnu-linux-api-headers aarch64-linux-gnu-glibc --noconfirm
+            pacman -S arm-none-eabi-binutils arm-none-eabi-gcc arm-none-eabi-newlib --noconfirm
 
-                    echo "GCC_64=CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
-                    echo "GCC_32=CROSS_COMPILE_ARM32=arm-none-eabi-" >> $GITHUB_ENV
+            echo "GCC_64=CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+            echo "GCC_32=CROSS_COMPILE_ARM32=arm-none-eabi-" >> $GITHUB_ENV
 
-                else
-                    echo "\033[0;31m❌ Your system os cannot supported."
-                fi
           else
-            echo "\033[0;31m❌ You needn't gcc powered by system."
+            echo "❌ Your system os cannot supported."
           fi
 
       - name: Set Compile Environment
@@ -293,91 +289,159 @@ runs:
         run: |
           cd $GITHUB_WORKSPACE
 
-          # Set GCC Aarch64
+          # Set GCC
           if [[ "${{ env.CLANG_SOURCE }}" == *proton* ]]; then
-            echo "Detected Proton Clang. Not use GCC Source."
-            GCC_64_BIN=aarch64-linux-gnu-
-            echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">   Detected Pronton Clang   <"
+            echo ">     Needn't other GCC      <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+            echo "GCC_64=CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+            echo "GCC_32=CROSS_COMPILE_ARM32=arm-linux-gnueabi-" >> $GITHUB_ENV
 
-          elif [ -z "${{ env.GCC_64_SOURCE }}" ] || [ "${{ env.GCC_GNU }}" == "true" ]; then
-            echo "Not set GCC 64 or GNU GCC has been set up!"
-          else
+          elif [[ "${{ env.GCC_GNU }}" == "true" ]]; then
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">      Detected GNU GCC      <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+          elif [[ -z "${{ env.GCC_64_SOURCE }}" ]] && [[ -z "${{ env.GCC_32_SOURCE }}" ]]; then
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">   Have not found any GCC   <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+          elif [[ -n "${{ env.GCC_64_SOURCE }}" ]] && [[ -n "${{ env.GCC_32_SOURCE }}" ]]; then
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">         Get GCC 64         <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
             if [[ "${{ env.GCC_64_SOURCE }}" == *".git" ]]; then
-              git clone ${{ env.GCC_64_SOURCE }} -b ${{ env.GCC_64_BRANCH }} gcc-64 --depth=1
-            fi
-            if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.gz' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_64_SOURCE }} gcc-64.tar.gz
+              git clone "${{ env.GCC_64_SOURCE }}" -b "${{ env.GCC_64_BRANCH }}" gcc-64 --depth=1
+            elif [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.gz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.tar.gz
               mkdir gcc-64
               tar -C gcc-64/ -zxvf gcc-64.tar.gz
-            fi
-            if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.xz' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_64_SOURCE }} gcc-64.tar.xz
+            elif [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.xz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.tar.xz
               mkdir gcc-64
               tar -C gcc-64/ -xvf gcc-64.tar.xz --strip-components 1
-            fi
-            if [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_64_SOURCE }} gcc-64.zip
+            elif [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.zip
               mkdir gcc-64
               unzip gcc-64.zip -d gcc-64/
+            else
+                echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+                echo ">                            <"
+                echo ">Please input vaild GCC link!<"
+                echo ">                            <"
+                echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+                false
             fi
             bash found_gcc.sh GCC_64
-          fi
 
-
-          # Set GCC ARM32
-          if [[ "${{ env.CLANG_SOURCE }}" == *proton* ]]; then
-            echo "Detected Proton Clang. Not use GCC Source."
-            GCC_32_BIN=arm-linux-gnueabi-
-            echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
-          elif [ -z "${{ env.GCC_32_SOURCE }}" ] || [ "${{ env.GCC_GNU }}" == "true" ]; then
-            echo "Not set GCC 32 or GNU GCC has been set up!"
-          else
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">         Get GCC 32         <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
             if [[ "${{ env.GCC_32_SOURCE }}" == *".git" ]]; then
-              git clone ${{ env.GCC_32_SOURCE }} -b ${{ env.GCC_32_BRANCH }} gcc-32 --depth=1
-            fi
-            if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_32_SOURCE }} gcc-32.tar.gz
+              git clone "${{ env.GCC_32_SOURCE }}" -b "${{ env.GCC_32_BRANCH }}" gcc-32 --depth=1
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.gz
               mkdir gcc-32
               tar -C gcc-32/ -zxvf gcc-32.tar.gz
-            fi
-            if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_32_SOURCE }} gcc-32.tar.xz
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.xz
               mkdir gcc-32
               tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
-            fi
-            if [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
-              ${{ env.CURLX }} ${{ env.GCC_32_SOURCE }} gcc-32.zip
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.zip
               mkdir gcc-32
               unzip gcc-32.zip -d gcc-32/
-            fi
-            if [ -z "${{ env.GCC_64_SOURCE }}" ]; then
-                bash found_gcc.sh GCC_32_ONLY
             else
-                bash found_gcc.sh GCC_32
+                echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+                echo ">                            <"
+                echo ">Please input vaild GCC link!<"
+                echo ">                            <"
+                echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+                false
             fi
+            bash found_gcc.sh GCC_32
+
+          elif [[ -n "${{ env.GCC_32_SOURCE }}" ]]; then
+            echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+            echo ">                            <"
+            echo ">         Get GCC 32         <"
+            echo ">                            <"
+            echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+            if [[ "${{ env.GCC_32_SOURCE }}" == *".git" ]]; then
+              git clone "${{ env.GCC_32_SOURCE }}" -b "${{ env.GCC_32_BRANCH }}" gcc-32 --depth=1
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.gz
+              mkdir gcc-32
+              tar -C gcc-32/ -zxvf gcc-32.tar.gz
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.xz
+              mkdir gcc-32
+              tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.zip
+              mkdir gcc-32
+              unzip gcc-32.zip -d gcc-32/
+            else
+                echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
+                echo ">                            <"
+                echo ">Please input vaild GCC link!<"
+                echo ">                            <"
+                echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
+                false
+            fi
+            bash found_gcc.sh GCC_32_ONLY
           fi
 
           # Set Clang
-          if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
-            git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
-          elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
-            ${{ env.CURLX }} ${{ env.CLANG_SOURCE }} clang.tar.gz
-            mkdir clang-custom
-            tar -C clang-custom/ -zxvf clang.tar.gz
-          elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.xz' ]]; then
-            ${{ env.CURLX }} ${{ env.CLANG_SOURCE }} clang.tar.xz
-            mkdir clang-custom
-            tar -C clang-custom/ -xvf clang.tar.xz --strip-components 1
-          elif [[ "${{ env.CLANG_SOURCE }}" == *'.zip' ]]; then
-            ${{ env.CURLX }} ${{ env.CLANG_SOURCE }} clang.zip
-            mkdir clang-custom
-            unzip clang.zip -d clang-custom/
-          elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
-            mkdir clang-custom
-            cd clang-custom
-            ${{ env.CURLX }} ${{ env.CLANG_SOURCE }} antman
-            chmod +x antman
-            bash antman -S
+          if [[ -z "${{ env.CLANG_SOURCE }}" ]]; then
+            echo ">>>>>>>>>>Clang Status<<<<<<<<<<"
+            echo ">                              <"
+            echo ">        Not Set Clang!        <"
+            echo ">                              <"
+            echo ">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<"
           else
-            echo "You needn't clang!"
+            echo ">>>>>>>>>>Clang Status<<<<<<<<<<"
+            echo ">                              <"
+            echo ">          Get Clang.          <"
+            echo ">                              <"
+            echo ">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<"
+
+            if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
+                git clone "${{ env.CLANG_SOURCE }}" -b "${{ env.CLANG_BRANCH }}" clang-custom --depth=1
+            elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
+                ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.tar.gz
+                mkdir clang-custom
+                tar -C clang-custom/ -zxvf clang.tar.gz
+            elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.xz' ]]; then
+                ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.tar.xz
+                mkdir clang-custom
+                tar -C clang-custom/ -xvf clang.tar.xz --strip-components 1
+            elif [[ "${{ env.CLANG_SOURCE }}" == *'.zip' ]]; then
+                ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.zip
+                mkdir clang-custom
+                unzip clang.zip -d clang-custom/
+            elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
+                mkdir clang-custom
+                cd clang-custom
+                ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" antman
+                chmod +x antman
+                bash antman -S
+            else
+                echo ">>>>>>>>>>Clang Status<<<<<<<<<<"
+                echo ">                              <"
+                echo ">Please input vaild Clang link!<"
+                echo ">                              <"
+                echo ">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<"
+                false
+            fi
           fi
