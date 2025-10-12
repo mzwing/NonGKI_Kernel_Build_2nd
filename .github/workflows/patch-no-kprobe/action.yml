@@ -89,14 +89,14 @@ runs:
 
                 bash backport_patches.sh
                 if grep -q "kernel_read" "fs/read_write.c"; then
-                    patch -p1 < backport_kernel_read_and_kernel_write_to_ksu.patch || true
-                    REJ_FOUND
-                else
                     echo ">>>>>>>>>>>>>>>Backport Patch<<<<<<<<<<<<<<<<"
                     echo ">                                           <"
                     echo "Your kernel patched the kernel patch, Skipped"
                     echo ">                                           <"
                     echo ">>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<"
+                else
+                    patch -p1 < backport_kernel_read_and_kernel_write_to_ksu.patch || true
+                    REJ_FOUND
                 fi
 
                 echo "execuated backport patch (contain kernel_read and kernel_write patch) successfully."
