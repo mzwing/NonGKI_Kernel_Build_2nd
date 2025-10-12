@@ -35,10 +35,10 @@ runs:
                     done
                 fi
 
-                if [[ "${{ env.SKIP_PATCH }}" == "true" ]]" ]; then
-                    echo "[+] SKIP_PATCH enabled, Skipped."
+                if [[ "${{ env.SKIP_PATCH }}" == "true" ]]; then
+                    echo "[+] SKIP_PATCH enabled, Skipped. "
                     PACK_FILES
-                elif [[ "${{ env.SKIP_PATCH }}" != "true" ]]" ]; then
+                elif [[ "${{ env.SKIP_PATCH }}" != "true" ]]; then
                     echo "[-] Found .rej files, Stopped! "
                     PACK_FILES
                     false
