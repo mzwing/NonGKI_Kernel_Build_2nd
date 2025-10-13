@@ -16,3 +16,27 @@ runs:
           patch -p1 < rekernel_extra.patch || true
 
           echo "Patched Re:Kernel for your kernel successfully."
+
+      - name: Updated ReKernel Patch Fixed
+        if: env.REKERNEL_ENABLE == 'true'
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+
+          if [[ -z "${{ env.REKERNEL_FIXED }}" ]]; then
+            echo "Your doesn't powered any patch file."
+          else
+            IFS=',' read -ra FIXED_LIST <<< "${{ env.REKERNEL_FIXED }}"
+            echo "<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            for i in "${!FIXED_LIST[@]}"; do
+              echo "Patching -> ${FIXED_LIST[$i]}"
+              if [[ -z "${{ env.SUSFS_FOLDER_FIXED }}" ]]; then
+                cp NonGKI_Kernel_Patches/${FIXED_LIST[$i]}.patch ./
+              else
+                cp NonGKI_Kernel_Patches/"${{ env.SUSFS_FOLDER_FIXED }}"/${FIXED_LIST[$i]}.patch ./
+              fi
+              patch -p1 < ${FIXED_LIST[$i]}.patch || true
+              echo "Patch fine!"
+              echo "<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            done
+          fi
