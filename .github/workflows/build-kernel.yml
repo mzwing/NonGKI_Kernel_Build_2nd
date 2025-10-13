@@ -47,6 +47,20 @@ jobs:
     uses: ./.github/workflows/build-redmi-k20pro-aosp-a15-sovietstaross.yml
     secrets: inherit
 
+  build-redmi-8-aosp-a15-419:
+    name: "Redmi 8 (Based-AOSP A15) (Kernel 4.19)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-redmi-8-aosp-a15-419.yml
+    secrets: inherit
+
+  build-redmi-note7-aosp-a15:
+    name: "Redmi Note 7 (Based AOSP A15)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-redmi-note7-aosp-a15.yml
+    secrets: inherit
+
   # Samsung
   build-samsung-note10plus-oneui-a15:
     name: "Samsung Note 10 Plus (OneUI A15)"

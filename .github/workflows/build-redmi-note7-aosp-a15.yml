@@ -65,7 +65,6 @@ env:
   SUSFS_LATEST_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
-  REKERNEL_FIX: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2 (From SUSFS_FOLDER_FIXED)
   
   BASEBAND_GUARD_ENABLE: "false" #if u want prevent unauthorized writes to critical partitions/device nodes.
   BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
@@ -74,8 +73,6 @@ env:
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
 
   KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
-  KPM_FIX: "false" # Fix Error When Enabling KPM.
-  KPM_PATCH: "false" # Patch KPM during compilation.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
 
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
