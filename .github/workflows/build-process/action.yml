@@ -213,29 +213,30 @@ runs:
           case "$MODE" in
             gz-dtb)
               if [ -f "include/linux/set_memory.h" ]; then
-                  if [ -d "out/arch/arm64/boot/dts" ]; then
-                      rm -f "$IMAGE_DIR/Image.gz-dtb" "$IMAGE_DIR/Image.gz"
-                      cp patch "$IMAGE_DIR/"
-                      cd "$IMAGE_DIR/" || exit 1
-                      ./patch
-                      rm -f Image
-                      mv oImage Image
-                      gzip -c Image > Image.gz
-                      cat Image.gz dts/${{ env.GENERATE_CHIP }}/*.dtb > Image.gz-dtb
-                      echo "Hook Image successfully !"
-                  elif [ -d "out/arch/arm64/boot/vendor/dts" ]; then
-                      rm -f "$IMAGE_DIR/Image.gz-dtb" "$IMAGE_DIR/Image.gz"
-                      cp patch "$IMAGE_DIR/"
-                      cd "$IMAGE_DIR/" || exit 1
-                      ./patch
-                      rm -f Image
-                      mv oImage Image
-                      gzip -c Image > Image.gz
-                      cat Image.gz vendor/dts/${{ env.GENERATE_CHIP }}/*.dtb > Image.gz-dtb
-                      echo "Hook Image successfully !"
+                  if [[ -d "arch/arm64/configs" ]]; then
+                    IMAGE_DIR="$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot"
                   else
-                      echo "Not found dts folder, abort."
+                    IMAGE_DIR="$GITHUB_WORKSPACE/device_kernel/out/arch/arm/boot"
                   fi
+
+                  if ls $IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                      DTB_PATH="dts"
+                  elif ls $IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                      DTB_PATH="dts/vendor"
+                  else
+                      echo "Not found dts, abort."
+                      false
+                  fi
+
+                  rm -f "$IMAGE_DIR/Image.gz-dtb" "$IMAGE_DIR/Image.gz"
+                  cp patch "$IMAGE_DIR/"
+                  cd "$IMAGE_DIR/" || exit 1
+                  ./patch
+                  rm -f Image
+                  mv oImage Image
+                  gzip -c Image > Image.gz
+                  cat Image.gz $DTB_PATH/${{ env.GENERATE_CHIP }}/*.dtb > Image.gz-dtb
+                  echo "Hook Image successfully !"
               else
                   echo "Not supported for your kernel !"
               fi

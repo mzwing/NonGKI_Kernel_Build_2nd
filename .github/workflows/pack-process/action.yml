@@ -55,18 +55,18 @@ runs:
             echo "Found DTB!"
             cp -fp $IMAGE_DIR/dtb tmp
           elif [ "${{ env.GENERATE_DTB }}" == "true" ]; then
-            if [ -d "$IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}" ]; then
-                cat $IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
-                cp -fp $IMAGE_DIR/DTB tmp
-                echo "Generated ${{ env.GENERATE_CHIP }} DTB."
-            elif [ -d "$IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}" ]; then
-                cat $IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
-                cp -fp $IMAGE_DIR/DTB tmp
-                echo "Generated ${{ env.GENERATE_CHIP }} DTB."
+            if ls $IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                DTB_PATH="dts"
+            elif ls $IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                DTB_PATH="dts/vendor"
             else
-                echo "Missing .dtb file in dts or dts/vendor ! Generate Failed !"
+                echo "Not found dts, abort."
                 false
             fi
+
+            cat $IMAGE_DIR/$DTB_PATH/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
+            cp -fp $IMAGE_DIR/DTB tmp
+            echo "Generated ${{ env.GENERATE_CHIP }} DTB."
           else
             echo "Doesn't found DTB! Your device maybe needn't the file."
           fi
@@ -109,18 +109,18 @@ runs:
             echo "Found DTB!"
             cp -fp $IMAGE_DIR/dtb out/dtb
           elif [ "${{ env.GENERATE_DTB }}" == "true" ]; then
-            if [ -d "$IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}" ]; then
-                cat $IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
-                cp -fp $IMAGE_DIR/DTB tmp
-                echo "Generated ${{ env.GENERATE_CHIP }} DTB."
-            elif [ -d "$IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}" ]; then
-                cat $IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
-                cp -fp $IMAGE_DIR/DTB tmp
-                echo "Generated ${{ env.GENERATE_CHIP }} DTB."
+            if ls $IMAGE_DIR/dts/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                DTB_PATH="dts"
+            elif ls $IMAGE_DIR/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtb 1> /dev/null 2>&1; then
+                DTB_PATH="dts/vendor"
             else
-                echo "Missing .dtb file in dts or dts/vendor ! Generate Failed !"
+                echo "Not found dts, abort."
                 false
             fi
+
+            cat $IMAGE_DIR/$DTB_PATH/${{ env.GENERATE_CHIP }}/*.dtb > $IMAGE_DIR/DTB
+            cp -fp $IMAGE_DIR/DTB tmp
+            echo "Generated ${{ env.GENERATE_CHIP }} DTB."
           else
             echo "Doesn't found DTB! Your device maybe needn't the file."
           fi
