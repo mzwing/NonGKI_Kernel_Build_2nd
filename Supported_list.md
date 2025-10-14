@@ -12,7 +12,7 @@
 | Redmi Note 10 Pro | INT | sweet | [4.14/negrroo/Lawrun_sm6150](https://github.com/negrroo/LawRun_xiaomi_sm6150) | MIUI | 13 | AnyKernel3 | rsuntk | ❌ | Normal | ❌ | ❌ | ❌ | Testing |  
 | Redmi 8 | All | olive | [4.19/blazey66/sdm439-4.19](https://github.com/blazey66/android_kernel_xiaomi_sdm439-4.19) | Based-AOSP | 15 | AnyKernel3 | SukiSU(U) | ✅ | Syscall | ✅ | ✅ | ❌ | Stable |  
 | Redmi Note 7 | CN | lavender | [4.19/pix106/southwest](https://github.com/pix106/android_kernel_xiaomi_southwest-4.19) | Based-AOSP | 15 | AnyKernel3 | SukiSU(U) | ✅ | Syscall | ❌ | ❌ | ❌ | Stable |  
-| Smartisan U3 Pro | CN | osborn | [4.4/MoKee/smartisan_sdm660](https://github.com/MoKee/android_kernel_smartisan_sdm660) | Mokee | 7.1.1 | AnyKernel3 | rsuntk | ❌ | Normal | ❌ | ❌ | ❌ | Testing |  
+| Smartisan U3 Pro | CN | osborn | [4.4/MoKee/smartisan_sdm660](https://github.com/MoKee/android_kernel_smartisan_sdm660) | Mokee | 7.1.1 | AnyKernel3 | Offical | ❌ | Normal | ❌ | ❌ | ❌ | Testing |  
 
 **English**:  
 - OnePlus 8 OxygenOS/ColorOS 13.1 has been tested and can be used on the OnePlus 8, 8T, 8 Pro and 9R.
