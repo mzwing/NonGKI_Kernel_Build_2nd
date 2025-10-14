@@ -340,9 +340,6 @@ runs:
                 echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
                 false
             fi
-            ls -al .
-            echo "====="
-            ls -al gcc-64
             bash found_gcc.sh GCC_64
 
             echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
