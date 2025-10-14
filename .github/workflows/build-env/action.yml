@@ -323,11 +323,11 @@ runs:
             elif [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.gz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.tar.gz
               mkdir gcc-64
-              tar -C gcc-64/ -zxvf gcc-64.tar.gz
+              tar -C gcc-64/ -zxf gcc-64.tar.gz
             elif [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.xz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.tar.xz
               mkdir gcc-64
-              tar -C gcc-64/ -xvf gcc-64.tar.xz --strip-components 1
+              tar -C gcc-64/ -xf gcc-64.tar.xz --strip-components 1
             elif [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.zip
               mkdir gcc-64
@@ -340,6 +340,9 @@ runs:
                 echo ">>>>>>>>>>>>>>><<<<<<<<<<<<<<<"
                 false
             fi
+            ls -al .
+            echo "====="
+            ls -al gcc-64
             bash found_gcc.sh GCC_64
 
             echo ">>>>>>>>>>GCC Status<<<<<<<<<<"
@@ -352,11 +355,11 @@ runs:
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.gz
               mkdir gcc-32
-              tar -C gcc-32/ -zxvf gcc-32.tar.gz
+              tar -C gcc-32/ -zxf gcc-32.tar.gz
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.xz
               mkdir gcc-32
-              tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
+              tar -C gcc-32/ -xf gcc-32.tar.xz --strip-components 1
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.zip
               mkdir gcc-32
@@ -382,11 +385,11 @@ runs:
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.gz
               mkdir gcc-32
-              tar -C gcc-32/ -zxvf gcc-32.tar.gz
+              tar -C gcc-32/ -zxf gcc-32.tar.gz
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.xz
               mkdir gcc-32
-              tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
+              tar -C gcc-32/ -xf gcc-32.tar.xz --strip-components 1
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.zip
               mkdir gcc-32
@@ -421,11 +424,11 @@ runs:
             elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
                 ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.tar.gz
                 mkdir clang-custom
-                tar -C clang-custom/ -zxvf clang.tar.gz
+                tar -C clang-custom/ -zxf clang.tar.gz
             elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.xz' ]]; then
                 ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.tar.xz
                 mkdir clang-custom
-                tar -C clang-custom/ -xvf clang.tar.xz --strip-components 1
+                tar -C clang-custom/ -xf clang.tar.xz --strip-components 1
             elif [[ "${{ env.CLANG_SOURCE }}" == *'.zip' ]]; then
                 ${{ env.CURLX }} "${{ env.CLANG_SOURCE }}" clang.zip
                 mkdir clang-custom
