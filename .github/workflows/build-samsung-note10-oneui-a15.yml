@@ -164,7 +164,7 @@ jobs:
           ./toolchain/mkbootimg --base $BASE --board $BOARD --cmdline "$CMDLINE" --hashtype $HASHTYPE --header_version $HEADER_VERSION --kernel $KERNEL_PATH --kernel_offset $KERNEL_OFFSET --os_patch_level $OS_PATCH_LEVEL --os_version $OS_VERSION --pagesize $PAGESIZE --ramdisk $RAMDISK --ramdisk_offset $RAMDISK_OFFSET --second_offset $SECOND_OFFSET --tags_offset $TAGS_OFFSET -o $OUTPUT_FILE
 
           cp build/out/d1/boot.img build/out/d1/zip/files/boot.img
-          cp build/out/d1/dtb.img build/out/1s/zip/files/dtb.img
+          cp build/out/d1/dtb.img build/out/d1/zip/files/dtb.img
           cp build/out/d1/dtbo.img build/out/d1/zip/files/dtbo.img
           cp build/update-binary build/out/d1/zip/META-INF/com/google/android/update-binary
           cp build/updater-script build/out/d1/zip/META-INF/com/google/android/updater-script
