@@ -328,6 +328,10 @@ runs:
               ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.tar.xz
               mkdir gcc-64
               tar -C gcc-64/ -xf gcc-64.tar.xz --strip-components 1
+            elif [[ "${{ env.GCC_64_SOURCE }}" == *'.xz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.xz
+              mkdir gcc-64
+              tar -C gcc-64/ -xf gcc-64.xz --strip-components 1
             elif [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_64_SOURCE }}" gcc-64.zip
               mkdir gcc-64
@@ -357,6 +361,10 @@ runs:
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.tar.xz
               mkdir gcc-32
               tar -C gcc-32/ -xf gcc-32.tar.xz --strip-components 1
+            elif [[ "${{ env.GCC_32_SOURCE }}" == *'.xz' ]]; then
+              ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.xz
+              mkdir gcc-32
+              tar -C gcc-32/ -xf gcc-32.xz --strip-components 1
             elif [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
               ${{ env.CURLX }} "${{ env.GCC_32_SOURCE }}" gcc-32.zip
               mkdir gcc-32
