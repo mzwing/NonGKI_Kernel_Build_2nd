@@ -109,8 +109,15 @@ runs:
 
           # Check tracepoint hook
           elif [[ ${{ env.HOOK_METHOD }} == "tracepoint" ]]; then
-            if [[ "${{ env.KERNELSU_SOURCE }}" != *SukiSU* ]]; then
-                echo "your kernelsu branch could not supported tracepoint, use SukiSU-Ultra please."
+            if [[ "${{ env.KERNELSU_AUTO_GET }}" == "true" ]] && [[ "${{ env.KERNELSU_AUTO_FORK }}" != "sukisu" ]]; then
+                echo "======================================Error======================================"
+                echo "= your kernelsu branch could not supported tracepoint, use SukiSU-Ultra please. ="
+                echo "================================================================================="
+                false
+            elif [[ "${{ env.KERNELSU_AUTO_GET }}" != "true" ]] && [[ "${{ env.KERNELSU_SOURCE }}" != *SukiSU* ]]; then
+                echo "======================================Error======================================"
+                echo "= your kernelsu branch could not supported tracepoint, use SukiSU-Ultra please. ="
+                echo "================================================================================="
                 false
             fi
             cp /tmp/Patches/tracepoint_hook_patches.sh ./
