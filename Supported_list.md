@@ -1,4 +1,4 @@
-| Device | Location | Codename | Kernel/Author/Name | OS | Android | Pack Method | KernelSU | SuSFS | Hook | KPM | Re:Kernel | BBG |Status |  
+| Device | Location | Codename | Kernel/Author/Name | OS | Android | Pack Method | KernelSU | SuSFS | Hook | KPM | Re:Kernel | BBG | Status |  
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|  
 | Oneplus 8 | All | instantnoodle | [4.19/ppajda/XTD](https://github.com/ppajda/android_kernel_oneplus_sm8250) | Oxygen OS 13.1 | 13 | AnyKernel3 | rsuntk | ✅ | Normal | ❌ | ❌ | ❌ | Stable |  
 | Xiaomi Mix2s | All | polaris | [4.9/Evolution-X-Devices/sdm845](https://github.com/Evolution-X-Devices/kernel_xiaomi_sdm845) | Evolution X 10.X | 15 | AnyKernel3 | SukiSU(U) | ✅ | Tracepoint | ✅ | ✅ | ✅ | Stable |  
@@ -15,6 +15,7 @@
 | Smartisan U3 Pro | CN | osborn | [4.4/MoKee/smartisan_sdm660](https://github.com/MoKee/android_kernel_smartisan_sdm660) | Mokee | 7.1.1 | AnyKernel3 | Offical | ❌ | Normal | ❌ | ❌ | ❌ | Testing |  
 | Samsung Note 10 | EU | d1 | [4.14/Ocin4ever/ExtremeKernel](https://github.com/Ocin4ever/ExtremeKernel) | OneUI 7 | 15 | AnyKernel3 | SukiSU(U) | ✅ | Tracepoint | ❌ | ❌ | ❌ | Stable |  
 | Redmi Note 11 Pro 5G | INT | veux | [5.4/dev-sm6375/Nebula](https://github.com/dev-sm6375/kernel_xiaomi_sm6375) | Based AOSP | 16 | AnyKernel3 | SukiSU(U) | ✅ | Normal | ✅ | ❌ | ❌ | Stable |  
+| Oneplus 8 | All | instantnoodle | [4.19/ppajda/XTD](https://github.com/toraidl/android_kernel_oneplus_sm8250_los) | Color OS 15 | 15 | AnyKernel3 | SukiSU(U) | ✅ | Syscall | ✅ | ❌ | ✅ | Testing |  
 
 **English**:  
 - OnePlus 8 OxygenOS/ColorOS 13.1 has been tested and can be used on the OnePlus 8, 8T, 8 Pro and 9R.
