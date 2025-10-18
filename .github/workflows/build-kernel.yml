@@ -61,11 +61,11 @@ jobs:
     uses: ./.github/workflows/build-redmi-note7-aosp-a15.yml
     secrets: inherit
 
-  build-build-redmi-note11pro-5g-aosp-a16:
+  build-redmi-note11pro-5g-aosp-a16:
     name: "Redmi Note 11 Pro 5G (Based AOSP A16)"
     strategy:
       fail-fast: true
-    uses: ./.github/workflows/build-build-redmi-note11pro-5g-aosp-a16.yml
+    uses: ./.github/workflows/build-redmi-note11pro-5g-aosp-a16.yml
     secrets: inherit
 
   # Samsung
