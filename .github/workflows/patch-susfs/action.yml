@@ -73,8 +73,11 @@ runs:
           }
 
           # Check SuSFS
-          if grep -q "CONFIG_KSU" "fs/exec.c"; then
-            echo "Checked SuSFS Patched, Skip."
+          if grep -q "CONFIG_KSU_SUSFS" "fs/namespace.c"; then
+            echo ">>>>>>>>>>>>Check<<<<<<<<<<<<"
+            echo ">Checked SuSFS Patched,Skip.<"
+            echo ">>>>>>>>>>>>>> <<<<<<<<<<<<<<"
+            echo "SUSFS_SKIP=true" >> $GITHUB_ENV
           else
             cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
 
@@ -108,7 +111,7 @@ runs:
           fi
 
       - name: SUSFS Patch Fixed
-        if: env.SUSFS_ENABLE == 'true'
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_SKIP != 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
@@ -132,7 +135,7 @@ runs:
           fi
 
       - name: Updated SUSFS Version
-        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true' && env.SUSFS_SKIP != 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
@@ -231,7 +234,7 @@ runs:
           fi
 
       - name: Updated SUSFS Patch Fixed
-        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true' && env.SUSFS_SKIP != 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
