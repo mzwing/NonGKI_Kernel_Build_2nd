@@ -172,7 +172,7 @@ runs:
                 rm -rf *KernelSU*
                 rm -rf drivers/kernelsu
                 git clone "https://github.com/$KERNELSU_AUTHOR/$KERNELSU_NAME.git" -b "$KERNELSU_BRANCH" "$KERNELSU_FOLDER"
-                ln -sf "$KERNELSU_FOLDER/kernel" "drivers/kernelsu"
+                ln -sf "../$KERNELSU_FOLDER/kernel" "drivers/kernelsu"
             fi
           }
 
@@ -199,7 +199,7 @@ runs:
                 rm -rf *KernelSU*
                 rm -rf drivers/kernelsu
                 git clone "${{ env.KERNELSU_SOURCE }}" -b "${{ env.KERNELSU_BRANCH }}" "$KERNELSU_FOLDER"
-                ln -sf "$KERNELSU_FOLDER/kernel" "drivers/kernelsu"
+                ln -sf "../$KERNELSU_FOLDER/kernel" "drivers/kernelsu"
             fi
           }
 
