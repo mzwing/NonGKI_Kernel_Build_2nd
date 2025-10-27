@@ -180,11 +180,69 @@ index 312cfa0..c4c5b34 100644
  		start_vaddr = end;
  
  		len = min(count, PM_ENTRY_BYTES * pm.pos);
+diff --git a/fs/susfs.c b/fs/susfs.c
+index 0f66cae..bf8e9cc 100644
+--- a/fs/susfs.c
++++ b/fs/susfs.c
+@@ -1125,6 +1125,41 @@ struct filename* susfs_get_redirected_path(unsigned long ino) {
+ }
+ #endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+ 
++/* sus_map */
++#ifdef CONFIG_KSU_SUSFS_SUS_MAP
++int susfs_add_sus_map(struct st_susfs_sus_map* __user user_info) {
++	struct st_susfs_sus_map info;
++	struct path path;
++	struct inode *inode = NULL;
++	int err = 0;
++
++	err = copy_from_user(&info, user_info, sizeof(info));
++	if (err) {
++		SUSFS_LOGE("failed copying from userspace\n");
++		return err;
++	}
++
++	err = kern_path(info.target_pathname, LOOKUP_FOLLOW, &path);
++	if (err) {
++		SUSFS_LOGE("Failed opening file '%s'\n", info.target_pathname);
++		return err;
++	}
++
++	if (!path.dentry->d_inode) {
++		err = -EINVAL;
++		goto out_path_put_path;
++	}
++	inode = d_inode(path.dentry);
++	spin_lock(&inode->i_lock);
++	set_bit(AS_FLAGS_SUS_MAP, &inode->i_mapping->flags);
++	SUSFS_LOGI("pathname: '%s', is flagged as AS_FLAGS_SUS_MAP\n", info.target_pathname);
++	spin_unlock(&inode->i_lock);
++	out_path_put_path:
++	path_put(&path);
++	return err;
++}
++#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MAP
++
+ static int copy_config_to_buf(const char *config_string, char *buf_ptr, size_t *copied_size, size_t bufsize) {
+ 	size_t tmp_size = strlen(config_string);
+ 
+@@ -1212,6 +1247,11 @@ int susfs_get_enabled_features(char __user* buf, size_t bufsize) {
+ 	err = copy_config_to_buf("CONFIG_KSU_SUSFS_SUS_SU\n", buf_ptr, &copied_size, bufsize);
+ 	if (err) goto out_kfree_kbuf;
+ 	buf_ptr = kbuf + copied_size;
++#endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MAP
++	err = copy_config_to_buf("CONFIG_KSU_SUSFS_SUS_MAP\n", buf_ptr, &copied_size, bufsize);
++	if (err) goto out_kfree_kbuf;
++	buf_ptr = kbuf + copied_size;
+ #endif
+ 	err = copy_to_user((void __user*)buf, (void *)kbuf, bufsize);
+ out_kfree_kbuf:
 diff --git a/include/linux/susfs.h b/include/linux/susfs.h
-index 80cf724..c5b0c9d 100644
+index 80cf724..557f672 100644
 --- a/include/linux/susfs.h
 +++ b/include/linux/susfs.h
-@@ -127,6 +127,13 @@ struct st_susfs_open_redirect_hlist {
+@@ -127,6 +127,20 @@ struct st_susfs_open_redirect_hlist {
  };
  #endif
  
@@ -195,13 +253,24 @@ index 80cf724..c5b0c9d 100644
 +};
 +#endif
 +
++/* sus_map */
++#ifdef CONFIG_KSU_SUSFS_SUS_MAP
++struct st_susfs_sus_map {
++	char                             target_pathname[SUSFS_MAX_LEN_PATHNAME];
++};
++#endif
++
  /***********************/
  /* FORWARD DECLARATION */
  /***********************/
-@@ -171,6 +178,10 @@ int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
+@@ -171,6 +185,14 @@ int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
  int susfs_add_open_redirect(struct st_susfs_open_redirect* __user user_info);
  struct filename* susfs_get_redirected_path(unsigned long ino);
  #endif
++/* sus_map */
++#ifdef CONFIG_KSU_SUSFS_SUS_MAP
++int susfs_add_sus_map(struct st_susfs_sus_map* __user user_info);
++#endif
 +/* sus_map */
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +int susfs_add_sus_map(struct st_susfs_sus_map* __user user_info);
