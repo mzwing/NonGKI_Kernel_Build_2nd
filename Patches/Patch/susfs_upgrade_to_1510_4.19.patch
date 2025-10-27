@@ -1,5 +1,5 @@
 diff --git a/fs/namei.c b/fs/namei.c
-index a63f34e..4b81a23 100644
+index a63f34e..5a1b51c 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1024,7 +1024,7 @@ static inline int may_follow_link(struct nameidata *nd)
@@ -709,10 +709,10 @@ index 9b92d50..67b48cc 100644
  /* susfs_init */
  void susfs_init(void) {
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index c39c314..d742c7b 100644
+index c39c314..e0e5d62 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1625,17 +1625,9 @@ struct task_struct {
+@@ -1625,15 +1625,8 @@ struct task_struct {
  	ANDROID_KABI_RESERVE(3);
  	ANDROID_KABI_RESERVE(4);
  	ANDROID_KABI_RESERVE(5);
@@ -726,11 +726,9 @@ index c39c314..d742c7b 100644
 -	u64 susfs_task_state;
 -#endif
  	struct mutex			futex_exit_mutex;
--#endif
+ #endif
  
- 	/* bca62a0ae565 ("sched/tune: Fix improper accounting of tasks") */
- #ifdef CONFIG_SCHED_TUNE
-@@ -1643,22 +1635,12 @@ struct task_struct {
+@@ -1643,22 +1636,12 @@ struct task_struct {
  #else
  	ANDROID_KABI_RESERVE(7);
  #endif
@@ -885,7 +883,7 @@ index 6c48a53..acf7e97 100644
  		}
  		seq_printf(m, "%px %c %s\n", value,
 diff --git a/security/selinux/avc.c b/security/selinux/avc.c
-index 7392d32..7eaa379 100644
+index 7392d32..30ce7af 100644
 --- a/security/selinux/avc.c
 +++ b/security/selinux/avc.c
 @@ -164,6 +164,11 @@ static void avc_dump_av(struct audit_buffer *ab, u16 tclass, u32 av)
