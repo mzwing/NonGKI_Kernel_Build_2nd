@@ -186,7 +186,7 @@ jobs:
           echo "CONFIG_ANDROID_SIMPLE_LMK_MINFREE=100" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
 
           # SchedHorizon
-          echo "CPU_FREQ_GOV_SCHEDHORIZON=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_CPU_FREQ_GOV_SCHEDHORIZON=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
 
           # Zram Writeback
           # echo "CONFIG_ZRAM_WRITEBACK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
