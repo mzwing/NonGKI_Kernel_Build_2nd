@@ -239,10 +239,10 @@ index 0f66cae..bf8e9cc 100644
  	err = copy_to_user((void __user*)buf, (void *)kbuf, bufsize);
  out_kfree_kbuf:
 diff --git a/include/linux/susfs.h b/include/linux/susfs.h
-index 80cf724..557f672 100644
+index 80cf724..c5b0c9d 100644
 --- a/include/linux/susfs.h
 +++ b/include/linux/susfs.h
-@@ -127,6 +127,20 @@ struct st_susfs_open_redirect_hlist {
+@@ -127,6 +127,13 @@ struct st_susfs_open_redirect_hlist {
  };
  #endif
  
@@ -253,24 +253,13 @@ index 80cf724..557f672 100644
 +};
 +#endif
 +
-+/* sus_map */
-+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
-+struct st_susfs_sus_map {
-+	char                             target_pathname[SUSFS_MAX_LEN_PATHNAME];
-+};
-+#endif
-+
  /***********************/
  /* FORWARD DECLARATION */
  /***********************/
-@@ -171,6 +185,14 @@ int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
+@@ -171,6 +178,10 @@ int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
  int susfs_add_open_redirect(struct st_susfs_open_redirect* __user user_info);
  struct filename* susfs_get_redirected_path(unsigned long ino);
  #endif
-+/* sus_map */
-+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
-+int susfs_add_sus_map(struct st_susfs_sus_map* __user user_info);
-+#endif
 +/* sus_map */
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +int susfs_add_sus_map(struct st_susfs_sus_map* __user user_info);
