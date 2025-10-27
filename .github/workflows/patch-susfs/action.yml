@@ -214,13 +214,19 @@ runs:
           REJ_FOUND "1.5.9"
 
           # Upgrade 1.5.10
-          cp /tmp/Patches/Patch/susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch ./
-          patch -p1 < susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch || true
-          echo "================="
-          echo "=Upgraded 1.5.10="
-          echo "================="
+          if grep -q "susfs_set_avc_log_spoofing" "drivers/kernelsu/core_hook.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch || true
+            echo "================="
+            echo "=Upgraded 1.5.10="
+            echo "================="
 
-          REJ_FOUND "1.5.10"
+            REJ_FOUND "1.5.10"
+          else
+            echo "============================================================"
+            echo "=Your kernelsu fork cannot supported SuSFS 1.5.10, Skipped.="
+            echo "============================================================"
+          fi
 
           # Upgrade 1.5.11
           if grep -q "susfs_reorder_mnt_id" "drivers/kernelsu/core_hook.c"; then
@@ -232,7 +238,39 @@ runs:
 
             REJ_FOUND "1.5.11"
           else
-            echo "Your kernelsu fork cannot supported SuSFS 1.5.11, Skipped."
+            echo "============================================================"
+            echo "=Your kernelsu fork cannot supported SuSFS 1.5.11, Skipped.="
+            echo "============================================================"
+          fi
+
+          # Upgrade 1.5.12
+          if grep -q "susfs_reorder_mnt_id" "drivers/kernelsu/core_hook.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1512_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_1512_${{ env.KERNEL_VERSION }}.patch || true
+            echo "================="
+            echo "=Upgraded 1.5.12="
+            echo "================="
+
+            REJ_FOUND "1.5.12"
+          else
+            echo "============================================================"
+            echo "=Your kernelsu fork cannot supported SuSFS 1.5.12, Skipped.="
+            echo "============================================================"
+          fi
+
+          # Upgrade 1.5.13
+          if grep -q "susfs_add_sus_map" "drivers/kernelsu/core_hook.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1513_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_1513_${{ env.KERNEL_VERSION }}.patch || true
+            echo "================="
+            echo "=Upgraded 1.5.13="
+            echo "================="
+
+            REJ_FOUND "1.5.13"
+          else
+            echo "============================================================"
+            echo "=Your kernelsu fork cannot supported SuSFS 1.5.13, Skipped.="
+            echo "============================================================"
           fi
 
       - name: Updated SUSFS Patch Fixed
