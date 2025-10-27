@@ -1,7 +1,7 @@
-diff --git a/fs/proc/base.c b/414kernel/fs/proc/base.c
+diff --git a/fs/proc/base.c b/fs/proc/base.c
 index d921fc0..788952d 100644
 --- a/fs/proc/base.c
-+++ b/414kernel/fs/proc/base.c
++++ b/fs/proc/base.c
 @@ -96,6 +96,9 @@
  #include <linux/flex_array.h>
  #include <linux/posix-timers.h>
@@ -59,10 +59,10 @@ index d921fc0..788952d 100644
  			if (++pos <= ctx->pos)
  				continue;
  
-diff --git a/fs/proc/task_mmu.c b/414kernel/fs/proc/task_mmu.c
-index 312cfa0..85eaa08 100644
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 312cfa0..c4c5b34 100644
 --- a/fs/proc/task_mmu.c
-+++ b/414kernel/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
 @@ -21,7 +21,7 @@
  #include <linux/mm_inline.h>
  #include <linux/ctype.h>
@@ -79,16 +79,16 @@ index 312cfa0..85eaa08 100644
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +		if (unlikely(inode->i_mapping->flags & BIT_SUS_MAPS) && susfs_is_current_proc_umounted()) {
 +			seq_setwidth(m, 25 + sizeof(void *) * 6 - 1);
-+			seq_put_hex_ll(m, NULL, vma->vm_start, 8);
-+			seq_put_hex_ll(m, "-", vma->vm_end, 8);
++			seq_printf(m, "%08llx", (unsigned long long)vma->vm_start);
++			seq_printf(m, "-%08llx", (unsigned long long)vma->vm_end);
 +			seq_putc(m, ' ');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, 'p');
-+			seq_put_hex_ll(m, " ", pgoff, 8);
-+			seq_put_hex_ll(m, " ", MAJOR(dev), 2);
-+			seq_put_hex_ll(m, ":", MINOR(dev), 2);
++			seq_printf(m, " %08llx", (unsigned long long)pgoff);
++			seq_printf(m, " %02x", MAJOR(dev));
++			seq_printf(m, ":%02x", MINOR(dev));
 +			seq_put_decimal_ull(m, " ", ino);
 +			seq_putc(m, ' ');
 +			goto done;
@@ -180,10 +180,10 @@ index 312cfa0..85eaa08 100644
  		start_vaddr = end;
  
  		len = min(count, PM_ENTRY_BYTES * pm.pos);
-diff --git a/include/linux/susfs.h b/414kernel/include/linux/susfs.h
+diff --git a/include/linux/susfs.h b/include/linux/susfs.h
 index 80cf724..c5b0c9d 100644
 --- a/include/linux/susfs.h
-+++ b/414kernel/include/linux/susfs.h
++++ b/include/linux/susfs.h
 @@ -127,6 +127,13 @@ struct st_susfs_open_redirect_hlist {
  };
  #endif
@@ -209,10 +209,10 @@ index 80cf724..c5b0c9d 100644
  
  int susfs_get_enabled_features(char __user* buf, size_t bufsize);
  void susfs_set_avc_log_spoofing(bool enabled);
-diff --git a/include/linux/susfs_def.h b/414kernel/include/linux/susfs_def.h
+diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
 index 2eb8791..e94d558 100644
 --- a/include/linux/susfs_def.h
-+++ b/414kernel/include/linux/susfs_def.h
++++ b/include/linux/susfs_def.h
 @@ -27,6 +27,7 @@
  #define CMD_SUSFS_SHOW_ENABLED_FEATURES 0x555e2
  #define CMD_SUSFS_SHOW_VARIANT 0x555e3
