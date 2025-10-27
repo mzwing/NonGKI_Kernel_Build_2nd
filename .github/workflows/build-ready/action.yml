@@ -171,8 +171,8 @@ runs:
             elif [[ "${{ env.KERNELSU_METHOD }}" == "only" ]]; then
                 rm -rf *KernelSU*
                 rm -rf drivers/kernelsu
-                ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/$KERNELSU_FOLDER/kernel")" "kernelsu"
                 git clone "https://github.com/$KERNELSU_AUTHOR/$KERNELSU_NAME.git" -b "$KERNELSU_BRANCH" "$KERNELSU_FOLDER"
+                ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/$KERNELSU_FOLDER/kernel")" "kernelsu"
             fi
           }
 
@@ -198,8 +198,8 @@ runs:
             elif [[ "${{ env.KERNELSU_METHOD }}" == "only" ]]; then
                 rm -rf *KernelSU*
                 rm -rf drivers/kernelsu
-                ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/$KERNELSU_FOLDER/kernel")" "kernelsu"
                 git clone "${{ env.KERNELSU_SOURCE }}" -b "${{ env.KERNELSU_BRANCH }}" "$KERNELSU_FOLDER"
+                ln -sf "$(realpath --relative-to="$GITHUB_WORKSPACE/device_kernel/drivers" "$GITHUB_WORKSPACE/device_kernel/$KERNELSU_FOLDER/kernel")" "kernelsu"
             fi
           }
 
