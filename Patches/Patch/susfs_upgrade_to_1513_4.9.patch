@@ -60,7 +60,7 @@ index 3f4c8f1..63d0b59 100644
  				continue;
  
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index aabf061..a9b820b 100644
+index aabf061..7da995d 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -17,7 +17,7 @@
@@ -79,14 +79,14 @@ index aabf061..a9b820b 100644
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +		if (unlikely(inode->i_mapping->flags & BIT_SUS_MAPS) && susfs_is_current_proc_umounted()) {
 +			seq_setwidth(m, 25 + sizeof(void *) * 6 - 1);
-+			seq_printf(m, "%08llx", (unsigned long long)vma->vm_start);
-+			seq_printf(m, "-%08llx", (unsigned long long)vma->vm_end);
++			seq_printf(m, "%08lx", vma->vm_start);
++			seq_printf(m, "-%08lx", vma->vm_end);
 +			seq_putc(m, ' ');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, 'p');
-+			seq_printf(m, " %08llx", (unsigned long long)pgoff);
++			seq_printf(m, " %08llx", pgoff);
 +			seq_printf(m, " %02x", MAJOR(dev));
 +			seq_printf(m, ":%02x", MINOR(dev));
 +			seq_put_decimal_ull(m, " ", ino);
@@ -294,3 +294,6 @@ index c58e7ff..e414409 100644
  
  #define ND_STATE_LOOKUP_LAST 32
  #define ND_STATE_OPEN_LAST 64
+diff --git a/last.txt b/last.txt
+new file mode 100644
+index 0000000..e69de29
