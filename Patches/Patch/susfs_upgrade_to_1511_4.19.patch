@@ -1,5 +1,5 @@
 diff --git a/fs/namei.c b/fs/namei.c
-index 4b81a23..8b98d6c 100644
+index 5a1b51c..cca3ab6 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1024,7 +1024,7 @@ static inline int may_follow_link(struct nameidata *nd)
@@ -102,7 +102,7 @@ index 4b81a23..8b98d6c 100644
  				return -ENOENT;
  			}
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 80e1750..c587133 100644
+index 80e1750..66409a4 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -44,9 +44,10 @@
@@ -285,16 +285,26 @@ index 80e1750..c587133 100644
  		if (err)
  			goto out_free_cache;
  
-@@ -1056,25 +1096,15 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+@@ -305,6 +345,10 @@ bypass_orig_flow:
+ #else
+ 		mnt->mnt_count = 1;
+ 		mnt->mnt_writers = 0;
++#endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++		// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
++		mnt->mnt.susfs_mnt_id_backup = 0;
+ #endif
+ 		mnt->mnt.data = NULL;
+ 
+@@ -1055,26 +1099,12 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+ {
  	struct mount *mnt;
  	struct dentry *root;
- #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	struct mount *m;
 -	struct mnt_namespace *mnt_ns;
 -	int mnt_id;
-+	// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
-+	mnt->mnt.susfs_mnt_id_backup = 0;
- #endif
+-#endif
  	
  	if (!type)
  		return ERR_PTR(-ENODEV);
@@ -735,7 +745,7 @@ index c2e8bb9..c4167fd 100644
  #define SUSFS_VARIANT "NON-GKI"
  #else
 diff --git a/include/linux/susfs_def.h b/include/linux/susfs_def.h
-index 8f540d3..af3b36c 100644
+index 8f540d3..a5b9d37 100644
 --- a/include/linux/susfs_def.h
 +++ b/include/linux/susfs_def.h
 @@ -34,9 +34,9 @@
@@ -771,8 +781,8 @@ index 8f540d3..af3b36c 100644
  }
  
 -static inline void susfs_set_current_non_root_user_app_proc(void) {
-+static inline void susfs_set_current_proc_umounted(void) {
 -	set_ti_thread_flag(&current->thread_info, TIF_NON_ROOT_USER_APP_PROC);
++static inline void susfs_set_current_proc_umounted(void) {
 +	set_ti_thread_flag(&current->thread_info, TIF_PROC_UMOUNTED);
  }
  

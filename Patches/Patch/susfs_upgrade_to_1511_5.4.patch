@@ -1,5 +1,5 @@
 diff --git a/fs/namei.c b/fs/namei.c
-index 536cbb0..c9624a4 100644
+index d45f6c5..36840b9 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1007,7 +1007,7 @@ static inline int may_follow_link(struct nameidata *nd)
@@ -102,7 +102,7 @@ index 536cbb0..c9624a4 100644
  				return -ENOENT;
  			}
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 7438b74..f1061da 100644
+index 7438b74..a6749e7 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -40,9 +40,10 @@
@@ -284,18 +284,29 @@ index 7438b74..f1061da 100644
  		if (err)
  			goto out_free_cache;
  
-@@ -1035,9 +1075,8 @@ struct vfsmount *vfs_create_mount(struct fs_context *fc)
+@@ -295,6 +335,10 @@ bypass_orig_flow:
+ #else
+ 		mnt->mnt_count = 1;
+ 		mnt->mnt_writers = 0;
++#endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++		// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
++		mnt->mnt.susfs_mnt_id_backup = 0;
+ #endif
+ 		mnt->mnt.data = NULL;
+ 
+@@ -1034,11 +1078,6 @@ struct vfsmount *vfs_create_mount(struct fs_context *fc)
+ {
  	struct mount *mnt;
  	struct super_block *sb;
- #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	struct mount *m;
 -	struct mnt_namespace *mnt_ns;
 -	int mnt_id;
-+	// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
-+	mnt->mnt.susfs_mnt_id_backup = 0;
- #endif
+-#endif
  
  
+ 	if (!fc->root)
 @@ -1046,15 +1085,19 @@ struct vfsmount *vfs_create_mount(struct fs_context *fc)
  	sb = fc->root->d_sb;
  
