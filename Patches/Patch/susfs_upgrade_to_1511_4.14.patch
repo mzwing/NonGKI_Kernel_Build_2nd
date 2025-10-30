@@ -1,5 +1,5 @@
 diff --git a/fs/namei.c b/fs/namei.c
-index e03b059..8cf2ac1 100644
+index 11d9220..8e22428 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1046,7 +1046,7 @@ static inline int may_follow_link(struct nameidata *nd)
@@ -102,7 +102,7 @@ index e03b059..8cf2ac1 100644
  				return -ENOENT;
  			}
 diff --git a/fs/namespace.c b/fs/namespace.c
-index f1883e4..cfca32b 100644
+index f1883e4..5d2b88f 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -37,11 +37,12 @@
@@ -297,16 +297,26 @@ index f1883e4..cfca32b 100644
  		if (err)
  			goto out_free_cache;
  
-@@ -1157,25 +1184,15 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+@@ -344,6 +371,10 @@ bypass_orig_flow:
+ #else
+ 		mnt->mnt_count = 1;
+ 		mnt->mnt_writers = 0;
++#endif
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++		// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
++		mnt->mnt.susfs_mnt_id_backup = 0;
+ #endif
+ 		mnt->mnt.data = NULL;
+ 
+@@ -1156,26 +1187,12 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+ {
  	struct mount *mnt;
  	struct dentry *root;
- #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	struct mount *m;
 -	struct mnt_namespace *mnt_ns;
 -	int mnt_id;
-+	// Make sure mnt->mnt.susfs_mnt_id_backup is initialized every time.
-+	mnt->mnt.susfs_mnt_id_backup = 0;
- #endif
+-#endif
  	
  	if (!type)
  		return ERR_PTR(-ENODEV);
@@ -592,10 +602,10 @@ index f1883e4..cfca32b 100644
  #endif
  #ifdef CONFIG_KSU_SUSFS
 diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
-index f3437ed..ad2f4e8 100644
+index f3437ed..8970b5c 100644
 --- a/fs/notify/fdinfo.c
 +++ b/fs/notify/fdinfo.c
-@@ -94,6 +94,9 @@
+@@ -94,6 +94,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
  {
  	struct inotify_inode_mark *inode_mark;
  	struct inode *inode;
@@ -605,7 +615,7 @@ index f3437ed..ad2f4e8 100644
  
  	if (!(mark->connector->flags & FSNOTIFY_OBJ_TYPE_INODE))
  		return;
-@@ -102,8 +105,10 @@
+@@ -102,8 +105,10 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
  	inode = igrab(mark->connector->inode);
  	if (inode) {
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
@@ -696,7 +706,7 @@ index bdf49a1..25ff6b5 100644
  	error = statfs_by_dentry(mnt->mnt.mnt_root, buf);
  	if (!error)
 diff --git a/fs/susfs.c b/fs/susfs.c
-index 67b48cc..5d2efd6 100644
+index 67b48cc..de54120 100644
 --- a/fs/susfs.c
 +++ b/fs/susfs.c
 @@ -354,16 +354,16 @@ void susfs_run_sus_path_loop(uid_t uid) {
