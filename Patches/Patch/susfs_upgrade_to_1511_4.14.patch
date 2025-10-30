@@ -102,7 +102,7 @@ index 11d9220..8e22428 100644
  				return -ENOENT;
  			}
 diff --git a/fs/namespace.c b/fs/namespace.c
-index f1883e4..5d2b88f 100644
+index f1883e4..a2fd6c0 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -37,11 +37,12 @@
@@ -308,7 +308,7 @@ index f1883e4..5d2b88f 100644
  #endif
  		mnt->mnt.data = NULL;
  
-@@ -1156,26 +1187,12 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+@@ -1156,26 +1187,24 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
  {
  	struct mount *mnt;
  	struct dentry *root;
@@ -321,22 +321,30 @@ index f1883e4..5d2b88f 100644
  	if (!type)
  		return ERR_PTR(-ENODEV);
  
--#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+ #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 -	// For newly created mounts, the only caller process we care is KSU
 -	if (unlikely(susfs_is_current_ksu_domain())) {
 -		mnt = alloc_vfsmnt(name, true, 0);
--		goto bypass_orig_flow;
--	}
++    // We only check for ksu process
++	if (susfs_is_current_ksu_domain()) {
++		mnt = susfs_alloc_sus_vfsmnt(name);
+ 		goto bypass_orig_flow;
+ 	}
 -	mnt = alloc_vfsmnt(name, false, 0);
 -bypass_orig_flow:
 -#else
++#endif
++
  	mnt = alloc_vfsmnt(name);
--#endif
++
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++bypass_orig_flow:
+ #endif
 +
  	if (!mnt)
  		return ERR_PTR(-ENOMEM);
  
-@@ -1202,28 +1219,6 @@ bypass_orig_flow:
+@@ -1202,28 +1231,6 @@ bypass_orig_flow:
  	mnt->mnt_mountpoint = mnt->mnt.mnt_root;
  	mnt->mnt_parent = mnt;
  
@@ -365,7 +373,7 @@ index f1883e4..5d2b88f 100644
  	lock_mount_hash();
  	list_add_tail(&mnt->mnt_instance, &root->d_sb->s_mounts);
  	unlock_mount_hash();
-@@ -1253,45 +1248,19 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
+@@ -1253,45 +1260,19 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
  	struct mount *mnt;
  	int err;
  #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
@@ -420,7 +428,7 @@ index f1883e4..5d2b88f 100644
  #endif
  	if (!mnt)
  		return ERR_PTR(-ENOMEM);
-@@ -1345,31 +1314,6 @@ bypass_orig_flow:
+@@ -1345,31 +1326,6 @@ bypass_orig_flow:
  	mnt->mnt_mountpoint = mnt->mnt.mnt_root;
  	mnt->mnt_parent = mnt;
  
@@ -452,7 +460,7 @@ index f1883e4..5d2b88f 100644
  	lock_mount_hash();
  	list_add_tail(&mnt->mnt_instance, &sb->s_mounts);
  	unlock_mount_hash();
-@@ -2108,9 +2052,6 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
+@@ -2108,9 +2064,6 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
  					int flag)
  {
  	struct mount *res, *p, *q, *r, *parent;
@@ -462,7 +470,7 @@ index f1883e4..5d2b88f 100644
  	
  	if (!(flag & CL_COPY_UNBINDABLE) && IS_MNT_UNBINDABLE(mnt))
  		return ERR_PTR(-EINVAL);
-@@ -2127,9 +2068,7 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
+@@ -2127,9 +2080,7 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
  	p = mnt;
  	list_for_each_entry(r, &mnt->mnt_mounts, mnt_child) {
  		struct mount *s;
@@ -473,7 +481,7 @@ index f1883e4..5d2b88f 100644
  		if (!is_subdir(r->mnt_mountpoint, dentry))
  			continue;
  
-@@ -2159,13 +2098,7 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
+@@ -2159,13 +2110,7 @@ struct mount *copy_tree(struct mount *mnt, struct dentry *dentry,
  			q = clone_mnt(p, p->mnt.mnt_root, flag);
  			if (IS_ERR(q))
  				goto out;
@@ -488,7 +496,7 @@ index f1883e4..5d2b88f 100644
  			lock_mount_hash();
  			list_add_tail(&q->mnt_list, &res->mnt_list);
  			attach_mnt(q, parent, p->mnt_mp);
-@@ -2634,7 +2567,7 @@ static int do_loopback(struct path *path, const char *old_name,
+@@ -2634,7 +2579,7 @@ static int do_loopback(struct path *path, const char *old_name,
  #if defined(CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT) || defined(CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT)
  	// Check if bind mounted path should be hidden and umounted automatically.
  	// And we target only process with ksu domain.
@@ -497,7 +505,7 @@ index f1883e4..5d2b88f 100644
  #if defined(CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT)
  		if (susfs_is_auto_add_sus_bind_mount_enabled &&
  				susfs_auto_add_sus_bind_mount(old_name, &old_path)) {
-@@ -3253,9 +3186,9 @@ long do_mount(const char *dev_name, const char __user *dir_name,
+@@ -3253,9 +3198,9 @@ long do_mount(const char *dev_name, const char __user *dir_name,
  				      dev_name, data_page);
  #ifdef CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT
  	// For both Legacy and Magic Mount KernelSU
@@ -509,7 +517,7 @@ index f1883e4..5d2b88f 100644
  			susfs_auto_add_sus_ksu_default_mount(dir_name);
  		}
  	}
-@@ -3337,10 +3270,6 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3337,10 +3282,6 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  	struct mount *old;
  	struct mount *new;
  	int copy_flags;
@@ -520,7 +528,7 @@ index f1883e4..5d2b88f 100644
  
  	BUG_ON(!ns);
  
-@@ -3360,10 +3289,7 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3360,10 +3301,7 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
  	if (user_ns != ns->user_ns)
  		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
@@ -532,7 +540,7 @@ index f1883e4..5d2b88f 100644
  	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
  	if (IS_ERR(new)) {
  		namespace_unlock();
-@@ -3381,12 +3307,7 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3381,12 +3319,7 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  	p = old;
  	q = new;
  	while (p) {
@@ -546,7 +554,7 @@ index f1883e4..5d2b88f 100644
  		q->mnt_ns = new_ns;
  		new_ns->mounts++;
  		if (new_fs) {
-@@ -3406,15 +3327,6 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3406,15 +3339,6 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  		while (p->mnt.mnt_root != q->mnt.mnt_root)
  			p = next_mnt(p, old);
  	}
@@ -562,7 +570,7 @@ index f1883e4..5d2b88f 100644
  
  	namespace_unlock();
  
-@@ -3957,24 +3869,24 @@ const struct proc_ns_operations mntns_operations = {
+@@ -3957,24 +3881,24 @@ const struct proc_ns_operations mntns_operations = {
  	.owner		= mntns_owner,
  };
  
