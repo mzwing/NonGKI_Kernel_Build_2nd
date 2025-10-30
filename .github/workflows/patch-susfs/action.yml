@@ -260,6 +260,22 @@ runs:
 
           # Upgrade 1.5.13
           if grep -q "CMD_SUSFS_ADD_SUS_MAP" "drivers/kernelsu/core_hook.c"; then
+
+            if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 15 ]; then
+                if grep -q "seq_put_hex_ll" "include/linux/seq_file.h"; then
+                    echo "=============Status============="
+                    echo "=Needn't hex_ll patch, Skipped.="
+                    echo "================================"
+                else
+                    cp /tmp/Patches/Patch/backport_seq_put_hex_ll.cocci ./
+                    spatch --sp-file backport_seq_put_hex_ll.cocci --in-place fs/seq_file.c
+                    sed -i '/^void seq_put_decimal_ll(struct seq_file \*m, const char \*delimiter, long long num);$/a\void seq_put_hex_ll(struct seq_file *m, const char *delimiter,\n\t\t\t unsigned long long v, unsigned int width);' include/linux/seq_file.h
+                    echo "==============Status=============="
+                    echo "=Tried to backport seq_put_hex_ll="
+                    echo "=================================="
+                fi
+            fi
+
             cp /tmp/Patches/Patch/susfs_upgrade_to_1513_${{ env.KERNEL_VERSION }}.patch ./
             patch -p1 < susfs_upgrade_to_1513_${{ env.KERNEL_VERSION }}.patch || true
             echo "================="

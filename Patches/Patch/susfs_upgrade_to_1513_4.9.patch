@@ -60,7 +60,7 @@ index 3f4c8f1..63d0b59 100644
  				continue;
  
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index aabf061..7da995d 100644
+index aabf061..cb6339b 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -17,7 +17,7 @@
@@ -79,16 +79,16 @@ index aabf061..7da995d 100644
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +		if (unlikely(inode->i_mapping->flags & BIT_SUS_MAPS) && susfs_is_current_proc_umounted()) {
 +			seq_setwidth(m, 25 + sizeof(void *) * 6 - 1);
-+			seq_printf(m, "%08lx", vma->vm_start);
-+			seq_printf(m, "-%08lx", vma->vm_end);
++			seq_put_hex_ll(m, NULL, vma->vm_start, 8);
++			seq_put_hex_ll(m, "-", vma->vm_end, 8);
 +			seq_putc(m, ' ');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, '-');
 +			seq_putc(m, 'p');
-+			seq_printf(m, " %08llx", pgoff);
-+			seq_printf(m, " %02x", MAJOR(dev));
-+			seq_printf(m, ":%02x", MINOR(dev));
++			seq_put_hex_ll(m, " ", pgoff, 8);
++			seq_put_hex_ll(m, " ", MAJOR(dev), 2);
++			seq_put_hex_ll(m, ":", MINOR(dev), 2);
 +			seq_put_decimal_ull(m, " ", ino);
 +			seq_putc(m, ' ');
 +			goto done;
