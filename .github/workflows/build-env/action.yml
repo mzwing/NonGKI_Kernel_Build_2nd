@@ -90,9 +90,14 @@ runs:
             echo "$TZ" > /etc/timezone
 
             apt-get update
-            apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler wget curl cpio coccinelle -y
+            apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler wget curl cpio -y
             apt-get install p7zip p7zip-full -y
             apt-get install libtinfo5 -y
+
+            # Install Coccinelle
+            ${{ env.CURLX }} http://launchpadlibrarian.net/466519547/coccinelle_1.0.4.deb-5ubuntu2_amd64.deb coccinelle.deb
+            apt install ./coccinelle.deb
+            rm -f coccinelle.deb
 
             if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
                 apt install python3 -y
