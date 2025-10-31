@@ -60,7 +60,7 @@ index 3f4c8f1..63d0b59 100644
  				continue;
  
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index aabf061..68c2cc4 100644
+index aabf061..4217dfd 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -17,7 +17,7 @@
@@ -72,26 +72,7 @@ index aabf061..68c2cc4 100644
  #include <linux/susfs_def.h>
  #endif
  
-@@ -387,6 +387,18 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
- 
- 	if (file) {
- 		struct inode *inode = file_inode(vma->vm_file);
-+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
-+		if (unlikely(inode->i_mapping->flags & BIT_SUS_MAPS) && susfs_is_current_proc_umounted()) {
-+			seq_printf(m, "%08lx-%08lx ---p %08llx %02x:%02x %lu ",
-+					vma->vm_start,
-+					vma->vm_end,
-+					pgoff,
-+					MAJOR(dev),
-+					MINOR(dev),
-+					ino);
-+			goto done;
-+		}
-+#endif
- #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
- 		if (unlikely(inode->i_mapping->flags & BIT_SUS_KSTAT)) {
- 			susfs_sus_ino_for_show_map_vma(inode->i_ino, &dev, &ino);
-@@ -921,6 +933,20 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -921,6 +921,20 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  	}
  
  	if (!rollup_mode)
@@ -112,7 +93,7 @@ index aabf061..68c2cc4 100644
  		seq_printf(m,
  			   "Size:           %8lu kB\n"
  			   "KernelPageSize: %8lu kB\n"
-@@ -928,7 +954,9 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -928,7 +942,9 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  			   (vma->vm_end - vma->vm_start) >> 10,
  			   vma_kernel_pagesize(vma) >> 10,
  			   vma_mmu_pagesize(vma) >> 10);
@@ -123,7 +104,7 @@ index aabf061..68c2cc4 100644
  	if (!rollup_mode || last_vma)
  		seq_printf(m,
  			   "Rss:            %8lu kB\n"
-@@ -964,10 +992,22 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -964,10 +980,22 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  
  
  	if (!rollup_mode) {
@@ -147,7 +128,7 @@ index aabf061..68c2cc4 100644
  	m_cache_vma(m, vma);
  	return ret;
  }
-@@ -1572,6 +1612,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1572,6 +1600,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  	unsigned long start_vaddr;
  	unsigned long end_vaddr;
  	int ret = 0, copied = 0;
@@ -157,7 +138,7 @@ index aabf061..68c2cc4 100644
  
  	if (!mm || !atomic_inc_not_zero(&mm->mm_users))
  		goto out;
-@@ -1630,6 +1673,16 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1630,6 +1661,16 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  		down_read(&mm->mmap_sem);
  		ret = walk_page_range(start_vaddr, end, &pagemap_walk);
  		up_read(&mm->mmap_sem);
