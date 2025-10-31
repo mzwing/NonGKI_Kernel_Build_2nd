@@ -95,8 +95,9 @@ runs:
             apt-get install libtinfo5 -y
 
             # Install Coccinelle
+            apt-get install python-gtk2 python-glade2 -y
             ${{ env.CURLX }} http://launchpadlibrarian.net/466519547/coccinelle_1.0.4.deb-5ubuntu2_amd64.deb coccinelle.deb
-            apt install ./coccinelle.deb
+            apt-get install ./coccinelle.deb
             rm -f coccinelle.deb
 
             if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
