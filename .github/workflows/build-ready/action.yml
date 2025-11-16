@@ -94,12 +94,12 @@ runs:
             if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
                 KERNELSU_AUTHOR="backslashxx"
                 KERNELSU_NAME="KernelSU"
-                KERNELSU_ORIGIN_BRANCH="staging"
+                KERNELSU_ORIGIN_BRANCH="master"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                     echo "${{ env.KERNELSU_AUTO_FORK }} doesn't support SuSFS! "
                     false
                 else
-                    KERNELSU_BRANCH="staging"
+                    KERNELSU_BRANCH="master"
                 fi
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                 KERNELSU_AUTHOR="rsuntk"
@@ -284,7 +284,8 @@ runs:
             if [ -f "include/linux/sched/signal.h" ]; then
                 echo "[+] Skipped it!"
             else
-                sed -i 's|<linux/sched/signal.h>|<linux/signal.h>|g' drivers/kernelsu/core_hook.c
+                sed -i 's|<linux/sched/signal.h>|<linux/signal.h>|g' drivers/kernelsu/setuid_hook.c
+                sed -i 's|<linux/sched/signal.h>|<linux/signal.h>|g' drivers/kernelsu/app_profile.c
                 echo "[+] Changed successfully!"
             fi
           fi
@@ -365,25 +366,25 @@ runs:
                 echo "=                                                                                                                                 ="
                 echo "=             ,and just remove the false code from the corresponding area in .github/workflows/build-ready/action.yml             ="
                 echo "==================================================================================================================================="
-                false
+                false # Remove it to force build without Overlay fs
             fi
 
             echo "CONFIG_KSU_KPROBES_HOOK=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
             if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 2 ]; then
-                echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-            else
                 echo "CONFIG_KSU_LSM_SECURITY_HOOKS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+            else
+                echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             fi
           fi
 
           if [[ "${{ env.KERNELSU_SOURCE }}" == *blackslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "magic" ]]; then
-            echo "KSU_KPROBES_KSUD=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+            echo "CONFIG_KSU_KPROBES_KSUD=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
             if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 2 ]; then
-                echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-            else
                 echo "CONFIG_KSU_LSM_SECURITY_HOOKS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+            else
+                echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
             fi
           fi
 
