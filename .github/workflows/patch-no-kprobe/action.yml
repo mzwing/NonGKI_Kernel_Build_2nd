@@ -52,6 +52,7 @@ runs:
 
           # Detect SuSFS is used to enable the SuSFS inline hook
           elif [[ ${{ env.SUSFS_ENABLE }} == "true" ]] && [[ ${{ env.SUSFS_UPDATE }} == "true" ]]; then
+            # Core
             cp /tmp/Patches/susfs_inline_hook_patches.sh ./
             bash susfs_inline_hook_patches.sh ./
 
@@ -97,6 +98,7 @@ runs:
 
           # Check syscall hook
           elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+            # Core
             cp /tmp/Patches/syscall_hook_patches.sh ./
             bash syscall_hook_patches.sh ./
 
@@ -153,6 +155,8 @@ runs:
                 echo "================================================================================="
                 false
             fi
+
+            # Core
             cp /tmp/Patches/tracepoint_hook_patches.sh ./
             bash tracepoint_hook_patches.sh ./
 
