@@ -39,8 +39,6 @@ env:
   SUSFS_FIXED: true
   SUSFS_UPDATE: true
 
-  HYMOFS_ENABLE : false
-
   AK3_SOURCE: "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH: "master"
 
@@ -67,6 +65,8 @@ env:
 
   REKERNEL_ENABLE: "true" # if u need Re:Kernel.
 
+  HYMOFS_ENABLE: "false" # if u need HymoFS.
+
   HOOK_METHOD: "syscall" # manual hook method,can choice : normal, syscall and tracepoint.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
 
@@ -91,7 +91,7 @@ env:
 
   SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
 
-  ANDROID_VERSION: "14" # Added to determine which SuSFS branch we should use. (GKI only)
+  ANDROID_VERSION: "14" # Added to determine which SuSFS branch we should use. (only GKI needs it)
 
 jobs:
   build-kernel:
@@ -116,9 +116,6 @@ jobs:
       - name: 🪝 Patch Kernel of SUSFS
         uses: ./.github/workflows/patch-susfs
 
-      - name: 😈 Patch Kernel of HymoFS
-        uses: ./.github/workflows/patch-hymofs
-
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
 
@@ -141,6 +138,9 @@ jobs:
 
       - name: 🔒 Patch Kernel of Baseband Guard
         uses: ./.github/workflows/patch-baseband-guard
+
+      - name: 🍀 Patch Kernel of HymoFS
+        uses: ./.github/workflows/patch-hymofs
 
       - name: 🔧 Patch Hide Stuff
         uses: ./.github/workflows/patch-hide-stuff
