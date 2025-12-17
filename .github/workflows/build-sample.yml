@@ -87,6 +87,10 @@ env:
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
 
+  SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
+
+  ANDROID_VERSION: "" # Added to determine which SuSFS branch we should use. (only GKI needs it)
+
 jobs:
   build-kernel:
     name: Build Kernel
@@ -112,6 +116,9 @@ jobs:
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
+
+      - name: 🧊 Set Swap Space
+        uses: ./.github/workflows/setup-swap
 
       - name: 🪛 Extra Kernel Options
         run: |
