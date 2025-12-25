@@ -128,9 +128,6 @@ jobs:
           # Enable Full LTO Optimization
           echo "CONFIG_LTO_CLANG_FULL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
-          # Enable Tmpfs for mountify module
-          echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel
 
