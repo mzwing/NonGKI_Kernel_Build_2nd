@@ -39,8 +39,8 @@ env:
   SUSFS_FIXED: false
   SUSFS_UPDATE: false
 
-  AK3_SOURCE: "https://github.com/osm0sis/AnyKernel3.git"
-  AK3_BRANCH: "master"
+  AK3_SOURCE: "https://github.com/YuzakiKokuban/AnyKernel3.git"
+  AK3_BRANCH: "kalama_tab"
 
   BOOT_SOURCE: ""
 
@@ -68,7 +68,7 @@ env:
   HOOK_METHOD: "syscall" # manual hook method,can choice : normal, syscall and tracepoint.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
 
-  KPM_ENABLE: "true" # Only use it for SukiSU-Ultra.
+  KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
 
   BASEBAND_GUARD_ENABLE: "true" #if u want prevent unauthorized writes to critical partitions/device nodes.
@@ -82,8 +82,8 @@ env:
   BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
 
-  BUILD_OTHER_CONFIG: "false" # Merge config files.
-  MERGE_CONFIG_FILES: "vendor/debugfs.config,vendor/lahaina_QGKI.config"
+  BUILD_OTHER_CONFIG: "true" # Merge config files.
+  MERGE_CONFIG_FILES: "kalama_le_gki.fragment"
 
   FREE_MORE_SPACE: "true" # if u want get more space, enabled it.
 
