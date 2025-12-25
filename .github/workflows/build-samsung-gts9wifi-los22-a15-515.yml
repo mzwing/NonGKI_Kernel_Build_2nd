@@ -65,8 +65,6 @@ env:
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
-  HYMOFS_ENABLE: "false" # if u need HymoFS.
-
   HOOK_METHOD: "syscall" # manual hook method,can choice : normal, syscall and tracepoint.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
 
@@ -144,9 +142,6 @@ jobs:
 
       - name: 🔒 Patch Kernel of Baseband Guard
         uses: ./.github/workflows/patch-baseband-guard
-
-      - name: 🍀 Patch Kernel of HymoFS
-        uses: ./.github/workflows/patch-hymofs
 
       - name: 🔧 Patch Hide Stuff
         uses: ./.github/workflows/patch-hide-stuff
