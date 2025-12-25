@@ -105,7 +105,7 @@ runs:
             echo ">>>>>>>>>>>>>> <<<<<<<<<<<<<<"
             echo "SUSFS_SKIP=true" >> $GITHUB_ENV
           else
-            cp /tmp/Patches/Patch/susfs_patch_to_${{ env.SUSFS_BRANCH }}.patch ./
+            cp /tmp/Patches/Patch/50_add_susfs_in_${{ env.SUSFS_BRANCH }}.patch ./
 
             patch -p1 < 50_add_susfs_in_${{ env.SUSFS_BRANCH }}.patch || true
           fi
