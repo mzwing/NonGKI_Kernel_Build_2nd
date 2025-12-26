@@ -9,10 +9,10 @@ runs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
 
-          # Variable
-          SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
-
           # Support for SuSFS GKI & NonGKI
+          SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
+          NEED_SUSFS_REPO_CLONE=true
+
           case ${{ env.KERNEL_VERSION }} in
             "6.12")
               SUSFS_BRANCH="gki-android16-6.12"
@@ -39,11 +39,9 @@ runs:
             ;;
             *)
               SUSFS_BRANCH="kernel-${{ env.KERNEL_VERSION }}"
+              NEED_SUSFS_REPO_CLONE=false
             ;;
           esac
-
-          # Export SUSFS_BRANCH
-          echo "SUSFS_BRANCH=$SUSFS_BRANCH" >> $GITHUB_ENV
 
           # Core
           if [[ "${{ env.SUSFS_FIXED }}" == true ]]; then
@@ -56,6 +54,17 @@ runs:
             else
               git clone https://github.com/${{ env.PATCHES_SOURCE }}.git -b ${{ env.PATCHES_BRANCH }} NonGKI_Kernel_Patches --depth=1 # It's not necessary.
             fi
+          fi
+
+          if [ "$NEED_SUSFS_REPO_CLONE" = true ]; then
+            git clone $SUSFS_SOURCE -b $SUSFS_BRANCH susfs4ksu --depth=1
+            # Copy
+            cp susfs4ksu/kernel_patches/fs/* fs/
+            cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+            cp susfs4ksu/50_add_susfs_in_kernel-"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
+            rm -rf susfs4ksu
+          else
+            echo "Skipping SuSFS repo clone for Non-GKI kernel."
           fi
 
       - name: Set KSU and SUSFS for DEFCONFIG
@@ -105,9 +114,9 @@ runs:
             echo ">>>>>>>>>>>>>> <<<<<<<<<<<<<<"
             echo "SUSFS_SKIP=true" >> $GITHUB_ENV
           else
-            cp /tmp/Patches/Patch/50_add_susfs_in_${{ env.SUSFS_BRANCH }}.patch ./
+            cp /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch ./
 
-            patch -p1 < 50_add_susfs_in_${{ env.SUSFS_BRANCH }}.patch || true
+            patch -p1 < susfs_patch_to_${{ env.KERNEL_VERSION }}.patch || true
           fi
 
           # Patch .rej find

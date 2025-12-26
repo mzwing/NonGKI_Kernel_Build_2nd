@@ -35,9 +35,8 @@ env:
   KERNELSU_AUTO_GET: "false" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK: "sukisu" # magic, rsuntk, next, wild, jingmatrix and sukisu
 
-  SUSFS_ENABLE: false
+  SUSFS_ENABLE: true
   SUSFS_FIXED: false
-  SUSFS_UPDATE: false
 
   AK3_SOURCE: "https://github.com/YuzakiKokuban/AnyKernel3.git"
   AK3_BRANCH: "kalama_tab"
@@ -60,8 +59,7 @@ env:
   PATCHES_BRANCH: "samsung_kernel" # [your_branch] -> main
 
   SUSFS_FOLDER_FIXED: "gts9wifi_sm8550" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
-  SUSFS_155_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2 (Only v1.5.5 SuSFS)
-  SUSFS_LATEST_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
