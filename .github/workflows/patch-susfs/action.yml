@@ -61,7 +61,7 @@ runs:
             # Copy
             cp susfs4ksu/kernel_patches/fs/* fs/
             cp susfs4ksu/kernel_patches/include/linux/* include/linux/
-            cp susfs4ksu/50_add_susfs_in_kernel-"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
+            cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
             rm -rf susfs4ksu
           else
             echo "Skipping SuSFS repo clone for Non-GKI kernel."
