@@ -69,7 +69,7 @@ env:
   KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
 
-  BASEBAND_GUARD_ENABLE: "false" #if u want prevent unauthorized writes to critical partitions/device nodes.
+  BASEBAND_GUARD_ENABLE: "true" #if u want prevent unauthorized writes to critical partitions/device nodes.
   BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
 
   HIDE_STUFF: "true" # hide some of the features
@@ -87,7 +87,7 @@ env:
 
   SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
 
-  ANDROID_VERSION: "15" # Added to determine which SuSFS branch we should use. (only GKI needs it)
+  ANDROID_VERSION: "13" # Added to determine which SuSFS branch we should use. (only GKI needs it)
 
 jobs:
   build-kernel:
