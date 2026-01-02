@@ -138,6 +138,12 @@ jobs:
           # Enable Fengchi Support (WIP)
           echo "CONFIG_HMBIRD_SCHEDULER=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
+          # Enable Full LTO Optimization
+          echo "CONFIG_LTO_CLANG_FULL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
+          # Enable O2 Optimization
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel
 

@@ -138,6 +138,9 @@ jobs:
           # Fix undefined symbol _stack_chk_guard
           echo "KBUILD_CFLAGS += -fno-stack-protector" >> ./Makefile
 
+          # Enable O2 Optimization
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel
 
