@@ -9,42 +9,21 @@ runs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
 
-          # Support for SuSFS GKI & NonGKI
-          SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
-          NEED_SUSFS_REPO_CLONE=true
-
-          case ${{ env.KERNEL_VERSION }} in
-            "6.12")
-              SUSFS_BRANCH="gki-android16-6.12"
-            ;;
-            "6.6")
-              SUSFS_BRANCH="gki-android15-6.6"
-            ;;
-            "6.1")
-              SUSFS_BRANCH="gki-android14-6.1"
-            ;;
-            "5.15")
-              if [ ${{ env.ANDROID_VERSION }} = "14" ]; then
-                SUSFS_BRANCH="gki-android14-5.15"
-              else
-                SUSFS_BRANCH="gki-android13-5.15"
-              fi
-            ;;
-            "5.10")
-              if [ ${{ env.ANDROID_VERSION }} = "13" ]; then
-                SUSFS_BRANCH="gki-android13-5.10"
-              else
-                SUSFS_BRANCH="gki-android12-5.10"
-              fi
-            ;;
-            *)
-              SUSFS_BRANCH="kernel-${{ env.KERNEL_VERSION }}"
-              NEED_SUSFS_REPO_CLONE=false
-            ;;
-          esac
-
           # Core
           if [[ "${{ env.SUSFS_FIXED }}" == true ]]; then
+            if [[ "${{ env.SUSFS_USE_GKI }}" == "true" ]]; then
+              if [ -z "${{ env.SUSFS_BRANCH }}" ]; then
+                false
+              else
+                git clone https://gitlab.com/simonpunk/susfs4ksu.git -b ${{ env.SUSFS_BRANCH }} susfs4ksu --depth=1
+                cp susfs4ksu/kernel_patches/fs/* fs/
+                cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+                cp susfs4ksu/kernel_patches/50_add_susfs_in_"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
+                rm -rf susfs4ksu
+              fi
+            else
+              echo "Skipping SuSFS repo clone for Non-GKI kernel."
+            fi
             if [ -z "${{ env.PATCHES_SOURCE }}" ] || [ -z "${{ env.PATCHES_BRANCH }}" ]; then
               echo "Please input a vaild source and branch!"
               false
@@ -54,17 +33,6 @@ runs:
             else
               git clone https://github.com/${{ env.PATCHES_SOURCE }}.git -b ${{ env.PATCHES_BRANCH }} NonGKI_Kernel_Patches --depth=1 # It's not necessary.
             fi
-          fi
-
-          if [ "$NEED_SUSFS_REPO_CLONE" = true ]; then
-            git clone $SUSFS_SOURCE -b $SUSFS_BRANCH susfs4ksu --depth=1
-            # Copy
-            cp susfs4ksu/kernel_patches/fs/* fs/
-            cp susfs4ksu/kernel_patches/include/linux/* include/linux/
-            cp susfs4ksu/kernel_patches/50_add_susfs_in_"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
-            rm -rf susfs4ksu
-          else
-            echo "Skipping SuSFS repo clone for Non-GKI kernel."
           fi
 
       - name: Set KSU and SUSFS for DEFCONFIG
