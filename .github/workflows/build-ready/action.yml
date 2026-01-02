@@ -207,7 +207,6 @@ runs:
           echo "KERNELSU_METHOD=${{ env.KERNELSU_METHOD }}" >> $GITHUB_ENV
 
       - name: KernelSU Additional Process
-        if: env.KERNELSU_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
