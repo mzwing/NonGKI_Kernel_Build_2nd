@@ -37,6 +37,8 @@ env:
 
   SUSFS_ENABLE: false
   SUSFS_FIXED: false
+  SUSFS_USE_GKI: true
+  SUSFS_BRANCH : "gki-android13-5.15"
 
   AK3_SOURCE: "https://github.com/YuzakiKokuban/AnyKernel3.git"
   AK3_BRANCH: "kalama_tab"
@@ -86,8 +88,6 @@ env:
   FREE_MORE_SPACE: "true" # if u want get more space, enabled it.
 
   SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
-
-  ANDROID_VERSION: "13" # Added to determine which SuSFS branch we should use. (only GKI needs it)
 
 jobs:
   build-kernel:
