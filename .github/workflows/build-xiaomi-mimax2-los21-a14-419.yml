@@ -29,7 +29,9 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  USE_KERNELSU : true
+  USE_GKI : false
+
+  KERNELSU_ENABLE : true
 
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
   KERNELSU_BRANCH: "builtin"
@@ -39,8 +41,7 @@ env:
 
   SUSFS_ENABLE: true
   SUSFS_FIXED: true
-  SUSFS_USE_GKI: false
-  SUSFS_BRANCH : ""
+  SUSFS_BRANCH : ""  # only GKI needs it.
 
   AK3_SOURCE: "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH: "master"
@@ -127,6 +128,9 @@ jobs:
 
           # Enable Full LTO Optimization
           echo "CONFIG_LTO_CLANG_FULL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
+          # Enable O2 Optimization
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel

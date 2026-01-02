@@ -85,7 +85,7 @@ runs:
           fi
 
       - name: Set KernelSU
-        if: env.USE_KERNELSU == 'true'
+        if: env.KERNELSU_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
@@ -207,7 +207,7 @@ runs:
           echo "KERNELSU_METHOD=${{ env.KERNELSU_METHOD }}" >> $GITHUB_ENV
 
       - name: KernelSU Additional Process
-        if: env.USE_KERNELSU == 'true'
+        if: env.KERNELSU_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
@@ -217,7 +217,7 @@ runs:
           bash clean_hook.sh
 
       - name: KPM Function Support
-        if: env.USE_KERNELSU == 'true' && env.KPM_ENABLE == 'true'
+        if: env.KERNELSU_ENABLE == 'true' && env.KPM_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
@@ -258,7 +258,7 @@ runs:
           fi
 
       - name: Set KSU and SUSFS for DEFCONFIG
-        if: env.USE_KERNELSU == 'true'
+        if: env.KERNELSU_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel

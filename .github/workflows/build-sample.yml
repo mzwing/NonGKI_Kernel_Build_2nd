@@ -29,7 +29,9 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  USE_KERNELSU : true
+  USE_GKI: false
+
+  KERNELSU_ENABLE : true
 
   KERNELSU_SOURCE : ""
   KERNELSU_BRANCH : ""
@@ -39,8 +41,7 @@ env:
 
   SUSFS_ENABLE : false
   SUSFS_FIXED : false
-  SUSFS_USE_GKI: false
-  SUSFS_BRANCH : ""
+  SUSFS_BRANCH : ""  # only GKI needs it.
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"

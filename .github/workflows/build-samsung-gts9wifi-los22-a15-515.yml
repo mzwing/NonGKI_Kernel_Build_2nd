@@ -29,7 +29,9 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  USE_KERNELSU : false
+  USE_GKI : true
+
+  KERNELSU_ENABLE : false
 
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
   KERNELSU_BRANCH: "builtin"
@@ -39,8 +41,7 @@ env:
 
   SUSFS_ENABLE: false
   SUSFS_FIXED: false
-  SUSFS_USE_GKI: true
-  SUSFS_BRANCH : "gki-android13-5.15"
+  SUSFS_BRANCH : "gki-android13-5.15" # only GKI needs it.
 
   AK3_SOURCE: "https://github.com/YuzakiKokuban/AnyKernel3.git"
   AK3_BRANCH: "kalama_tab"
@@ -76,7 +77,7 @@ env:
   BASEBAND_GUARD_ENABLE: "true" #if u want prevent unauthorized writes to critical partitions/device nodes.
   BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
 
-  HIDE_STUFF: "true" # hide some of the features
+  HIDE_STUFF: "false" # hide some of the features
 
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.

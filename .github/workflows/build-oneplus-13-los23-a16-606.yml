@@ -29,7 +29,9 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
-  USE_KERNELSU : false
+  USE_GKI : true
+
+  KERNELSU_ENABLE : false
 
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
   KERNELSU_BRANCH: "builtin"
@@ -39,6 +41,7 @@ env:
 
   SUSFS_ENABLE : false
   SUSFS_FIXED : false
+  SUSFS_BRANCH : "gki-android15-6.6" # only GKI needs it.
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
@@ -125,10 +128,14 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
 
+          # Get OnePlus 13 sm8750 modules repo
+          git clone https://github.com/LineageOS/android_kernel_oneplus_sm8750-modules.git -b ${{ env.KERNEL_BRANCH}} ../sm8750-modules --depth=1
+
           # Enable Tmpfs for mountify module
           echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          
+
+          # Enable Fengchi Support (WIP)
           echo "CONFIG_HMBIRD_SCHEDULER=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
       - name: 🧰 Patch Kernel of Re:Kernel
