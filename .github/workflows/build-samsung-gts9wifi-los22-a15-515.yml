@@ -29,6 +29,8 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
+  USE_KERNELSU : false
+
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
   KERNELSU_BRANCH: "builtin"
 
