@@ -7,7 +7,7 @@ runs:
       if: env.FREE_MORE_SPACE == 'true' && env.SETUP_SWAP == 'true'
       uses: pierotofy/set-swap-space@v1.0
       with:
-        swap-size-gb: 20
+        swap-size-gb: 30
 
     - name: Raise the Priority of Using Swap Space
       if: env.FREE_MORE_SPACE == 'true' && env.SETUP_SWAP == 'true'
