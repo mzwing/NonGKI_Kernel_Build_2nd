@@ -4,6 +4,7 @@ runs:
   using: 'composite'
   steps:
       - name: Patch Kernel for no-kprobe
+        if: env.KERNELSU_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
