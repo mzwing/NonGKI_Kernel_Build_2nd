@@ -128,6 +128,7 @@ jobs:
 
           # Enable Tmpfs for mountify module
           echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # Fix libelf.h not found
           sudo apt-get install -y libelf-dev

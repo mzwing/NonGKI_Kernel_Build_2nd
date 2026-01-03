@@ -135,9 +135,6 @@ jobs:
           echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
-          # Enable Fengchi Support (WIP)
-          echo "CONFIG_HMBIRD_SCHEDULER=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-
           # Enable Full LTO Optimization
           echo "CONFIG_LTO_CLANG_FULL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
