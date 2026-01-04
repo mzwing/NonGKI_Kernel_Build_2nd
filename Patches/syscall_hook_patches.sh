@@ -270,14 +270,14 @@ for i in "${patch_files[@]}"; do
         if grep -q "ksu_handle_setresuid" "drivers/kernelsu/setuid_hook.c" >/dev/null 2>&1; then
 
             sed -i '/^SYSCALL_DEFINE3(setresuid, uid_t, ruid, uid_t, euid, uid_t, suid)/i\#ifdef CONFIG_KSU\nextern int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid);\n#endif\n' kernel/sys.c
-            # awk '/kruid = make_kuid\(ns, ruid\);/{count++; if(count==2){print "#ifdef CONFIG_KSU_SUSFS"; print "\t(void)ksu_handle_setresuid(ruid, euid, suid);"; print "#endif"}}1' kernel/sys.c > kernel/sys.c.bak && mv kernel/sys.c.bak kernel/sys.c
+            awk '/kruid = make_kuid\(ns, ruid\);/{count++; if(count==2){print "#ifdef CONFIG_KSU_SUSFS"; print "\t(void)ksu_handle_setresuid(ruid, euid, suid);"; print "#endif"}}1' kernel/sys.c > kernel/sys.c.bak && mv kernel/sys.c.bak kernel/sys.c
 
-            # if grep -q "ksu_handle_setresuid" "kernel/sys.c"; then
-            #     echo "[+] kernel/sys.c Patched!"
-            #     echo "[+] Count: $(grep -c "ksu_handle_setresuid" "kernel/sys.c")"
-            # else
-            #     echo "[-] kernel/sys.c patch failed for unknown reasons, please provide feedback in time."
-            # fi
+            if grep -q "ksu_handle_setresuid" "kernel/sys.c"; then
+                echo "[+] kernel/sys.c Patched!"
+                echo "[+] Count: $(grep -c "ksu_handle_setresuid" "kernel/sys.c")"
+            else
+                echo "[-] kernel/sys.c patch failed for unknown reasons, please provide feedback in time."
+            fi
         else
             echo "[-] KernelSU have no ksu_handle_setresuid, Skipped."
         fi
