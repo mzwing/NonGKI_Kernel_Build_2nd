@@ -21,3 +21,10 @@ jobs:
       fail-fast: true
     uses: ./.github/workflows/build-samsung-gts9wifi-los22-a15-515.yml
     secrets: inherit
+
+  build-oneplus-13-los23-a16-606:
+    name: "OnePlus 13 (LineageOS 23.0 A16) (6.06)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-oneplus-13-los23-a16-606.yml
+    secrets: inherit
