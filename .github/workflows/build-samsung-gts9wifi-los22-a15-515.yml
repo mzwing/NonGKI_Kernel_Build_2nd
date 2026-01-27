@@ -82,7 +82,7 @@ env:
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
 
-  BUILD_DEBUGGER: "true" # Output build errors.
+  BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
 
   BUILD_OTHER_CONFIG: "true" # Merge config files.
@@ -135,9 +135,6 @@ jobs:
 
           # Fix libelf.h not found & pahole not available
           sudo apt-get install -y libelf-dev pahole
-
-          # Fix BTF issue (pahole is not available)
-          # sed -i '/CONFIG_DEBUG_INFO_BTF=y/d' ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # Fix undefined symbol _stack_chk_guard
           echo "KBUILD_CFLAGS += -fno-stack-protector" >> ./Makefile
