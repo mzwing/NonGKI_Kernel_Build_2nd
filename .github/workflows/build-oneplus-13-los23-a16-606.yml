@@ -40,7 +40,7 @@ env:
   KERNELSU_AUTO_FORK : "sukisu" # magic, rsuntk, next, wild and sukisu
 
   SUSFS_ENABLE : true
-  SUSFS_FIXED : true
+  SUSFS_FIXED : false
   SUSFS_BRANCH : "gki-android15-6.6" # only GKI needs it.
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
@@ -64,7 +64,7 @@ env:
   PATCHES_BRANCH: "oneplus_kernel" # [your_branch] -> main
 
   SUSFS_FOLDER_FIXED: "dodge_sm8750" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
-  SUSFS_PATCH_FIXED: "fix_susfs_func_undeclared.patch" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
@@ -90,7 +90,7 @@ env:
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   MERGE_CONFIG_FILES: "vendor/debugfs.config,vendor/lahaina_QGKI.config"
 
-  FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
+  FREE_MORE_SPACE: "true" # if u want get more space, enabled it.
 
   SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
 
@@ -128,15 +128,19 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
 
+          # Fix SuSFS function undeclared
+          wget https://raw.githubusercontent.com/mzwing/NonGKI_Kernel_Patches/refs/heads/oneplus_kernel/dodge_sm8750/fix_susfs_func_undeclared.patch
+          patch -p1 < fix_susfs_func_undeclared.patch
+
           # Get OnePlus 13 sm8750 modules repo
           git clone https://github.com/LineageOS/android_kernel_oneplus_sm8750-modules.git -b ${{ env.KERNEL_BRANCH}} ../sm8750-modules --depth=1
-
-          # Enable ReSukiSU Multi Manager Support
-          echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # Enable Tmpfs for mountify module
           echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
+          # Enable ReSukiSU Multi Manager Support
+          echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # Enable Thin LTO Optimization
           echo "CONFIG_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
