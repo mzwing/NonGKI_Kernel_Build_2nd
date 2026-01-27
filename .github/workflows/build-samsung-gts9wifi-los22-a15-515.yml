@@ -31,7 +31,7 @@ env:
 
   USE_GKI : true
 
-  KERNELSU_ENABLE : false
+  KERNELSU_ENABLE : true
 
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
   KERNELSU_BRANCH: "builtin"
@@ -39,7 +39,7 @@ env:
   KERNELSU_AUTO_GET: "false" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK: "sukisu" # magic, rsuntk, next, wild, jingmatrix and sukisu
 
-  SUSFS_ENABLE: false
+  SUSFS_ENABLE: true
   SUSFS_FIXED: false
   SUSFS_BRANCH : "gki-android13-5.15" # only GKI needs it.
 
@@ -77,7 +77,7 @@ env:
   BASEBAND_GUARD_ENABLE: "true" #if u want prevent unauthorized writes to critical partitions/device nodes.
   BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
 
-  HIDE_STUFF: "false" # hide some of the features
+  HIDE_STUFF: "true" # hide some of the features
 
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
@@ -129,6 +129,9 @@ jobs:
           # Enable Tmpfs for mountify module
           echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
+          # Enable ReSukiSU Multi Manager Support
+          echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # Fix libelf.h not found
           sudo apt-get install -y libelf-dev

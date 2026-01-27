@@ -126,6 +126,10 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
 
+          # Enable Tmpfs for mountify module
+          echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
           # Enable ReSukiSU Multi Manager Support
           echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
