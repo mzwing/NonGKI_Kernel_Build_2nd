@@ -1,0 +1,16 @@
+name: "Setup swap space."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Swap Space
+      if: env.FREE_MORE_SPACE == 'true' && env.SETUP_SWAP == 'true'
+      uses: pierotofy/set-swap-space@v1.0
+      with:
+        swap-size-gb: 20
+
+    - name: Raise the Priority of Using Swap Space
+      if: env.FREE_MORE_SPACE == 'true' && env.SETUP_SWAP == 'true'
+      shell: bash
+      run: |
+        sudo sysctl vm.swappiness=10

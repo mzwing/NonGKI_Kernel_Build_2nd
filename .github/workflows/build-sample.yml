@@ -29,6 +29,10 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
+  USE_GKI: false
+
+  KERNELSU_ENABLE : true
+
   KERNELSU_SOURCE : ""
   KERNELSU_BRANCH : ""
 
@@ -37,6 +41,7 @@ env:
 
   SUSFS_ENABLE : false
   SUSFS_FIXED : false
+  SUSFS_BRANCH : ""  # only GKI needs it.
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
@@ -88,6 +93,8 @@ env:
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
 
+  SETUP_SWAP: "true" # if u want setup swap space, enabled it. Note that FREE_MORE_SPACE must also be true to avoid storage lack.
+
 jobs:
   build-kernel:
     name: Build Kernel
@@ -113,6 +120,9 @@ jobs:
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
+
+      - name: 🧊 Set Swap Space
+        uses: ./.github/workflows/setup-swap
 
       - name: 🪛 Extra Kernel Options
         run: |

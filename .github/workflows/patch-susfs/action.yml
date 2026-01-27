@@ -4,10 +4,26 @@ runs:
   using: 'composite'
   steps:
       - name: Get SuSFS
-        if: env.SUSFS_ENABLE == 'true'
+        if: env.KERNELSU_ENABLE == 'true' && env.SUSFS_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+
+          # Support SuSFS for GKI Kernel
+          if [[ "${{ env.USE_GKI }}" == "true" ]]; then
+            if [ -z "${{ env.SUSFS_BRANCH }}" ]; then
+              echo "Please input a vaild SuSFS branch!"
+              exit 1
+            else
+              git clone https://gitlab.com/simonpunk/susfs4ksu.git -b ${{ env.SUSFS_BRANCH }} susfs4ksu --depth=1
+              cp susfs4ksu/kernel_patches/fs/* fs/
+              cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+              cp susfs4ksu/kernel_patches/50_add_susfs_in_"$SUSFS_BRANCH".patch /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch
+              rm -rf susfs4ksu
+            fi
+          else
+            echo "Skipping SuSFS repo clone for Non-GKI kernel."
+          fi
 
           # Core
           if [[ "${{ env.SUSFS_FIXED }}" == true ]]; then
@@ -23,7 +39,7 @@ runs:
           fi
 
       - name: Set KSU and SUSFS for DEFCONFIG
-        if: env.SUSFS_ENABLE == 'true'
+        if: env.KERNELSU_ENABLE == 'true' && env.SUSFS_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
@@ -44,7 +60,7 @@ runs:
           fi
 
       - name: Patch SuSFS
-        if: env.SUSFS_ENABLE == 'true'
+        if: env.KERNELSU_ENABLE == 'true' && env.SUSFS_ENABLE == 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
@@ -101,7 +117,7 @@ runs:
           fi
 
       - name: SUSFS Patch Fixed
-        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_SKIP != 'true'
+        if: env.KERNELSU_ENABLE == 'true' && env.SUSFS_ENABLE == 'true' && env.SUSFS_SKIP != 'true'
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
