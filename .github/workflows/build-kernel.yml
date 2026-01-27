@@ -8,15 +8,23 @@ on:
   workflow_call:
 
 jobs:
-  # OPPO
-  ## Oneplus
-  build-device-name-systemos-android-version:
-    name: "Device Name (SystemOS Android Version) (Kernel Name)"
+  build-xiaomi-mimax2-los21-a14-419:
+    name: "Xiaomi Mi Max 2 (LineageOS 21 A14) (4.19)"
     strategy:
       fail-fast: true
-    uses: ./.github/workflows/build-sample.yml
+    uses: ./.github/workflows/build-xiaomi-mimax2-los21-a14-419.yml
     secrets: inherit
 
-  # Xiaomi
+  build-samsung-gts9wifi-los22-a15-515:
+    name: "Samsung Galaxy Tab S9 WiFi (LineageOS 22.1 A15) (5.15)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-samsung-gts9wifi-los22-a15-515.yml
+    secrets: inherit
 
-  ## Redmi
+  build-oneplus-13-los23-a16-606:
+    name: "OnePlus 13 (LineageOS 23.0 A16) (6.06)"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build-oneplus-13-los23-a16-606.yml
+    secrets: inherit
