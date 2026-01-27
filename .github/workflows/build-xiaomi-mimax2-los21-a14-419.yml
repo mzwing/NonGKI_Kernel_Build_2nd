@@ -126,9 +126,6 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
 
-          # Fix n#ifdef problem...
-          sed -i 's/n#ifdef CONFIG_KSU/#ifdef CONFIG_KSU/g' fs/exec.c
-
           # Enable ReSukiSU Multi Manager Support
           echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
