@@ -40,7 +40,7 @@ env:
   KERNELSU_AUTO_FORK : "sukisu" # magic, rsuntk, next, wild and sukisu
 
   SUSFS_ENABLE : true
-  SUSFS_FIXED : false
+  SUSFS_FIXED : true
   SUSFS_BRANCH : "gki-android15-6.6" # only GKI needs it.
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
@@ -64,7 +64,7 @@ env:
   PATCHES_BRANCH: "oneplus_kernel" # [your_branch] -> main
 
   SUSFS_FOLDER_FIXED: "dodge_sm8750" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
-  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+  SUSFS_PATCH_FIXED: "fix_susfs_func_undeclared.patch" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
