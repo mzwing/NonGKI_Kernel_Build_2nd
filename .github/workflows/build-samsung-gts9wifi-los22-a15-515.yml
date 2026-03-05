@@ -34,12 +34,12 @@ env:
   KERNELSU_ENABLE : true
 
   KERNELSU_SOURCE: "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh"
-  KERNELSU_BRANCH: "builtin"
+  KERNELSU_BRANCH: "main"
 
   KERNELSU_AUTO_GET: "false" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK: "sukisu" # magic, rsuntk, next, wild, jingmatrix and sukisu
 
-  SUSFS_ENABLE: true
+  SUSFS_ENABLE: false
   SUSFS_FIXED: false
   SUSFS_BRANCH : "gki-android13-5.15" # only GKI needs it.
 
@@ -70,6 +70,8 @@ env:
 
   HOOK_METHOD: "syscall" # manual hook method,can choice : normal, syscall and tracepoint.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
+
+  KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
 
   KPM_ENABLE: "false" # Anyone devices.
   KPM_INLINE: "false" # Only use it for SukiSU-Ultra.
